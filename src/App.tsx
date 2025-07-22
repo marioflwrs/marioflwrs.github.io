@@ -63,21 +63,31 @@ function HeroSection() {
 		}}
 		id="hero"
 	  >
-		<motion.img
-		  src="/avatar.png"
-		  alt="Mario Ballesteros"
-		  initial={{ scale: 0.7, opacity: 0, y: 40 }}
-		  animate={{ scale: 1, opacity: 1, y: 0 }}
-		  transition={{ duration: 0.8, ease: 'easeOut' }}
-		  style={{
-			width: 120,
-			height: 120,
-			borderRadius: '50%',
-			border: `4px solid ${ACCENT2}`,
-			objectFit: 'cover',
-			boxShadow: `0 4px 32px ${ACCENT1}55`,
-		  }}
-		/>
+	<motion.img
+	  src="/avatar.png"
+	  alt="Mario Ballesteros"
+	  initial={{ scale: 0.7, opacity: 0, y: 40 }}
+	  animate={{
+		scale: 1,
+		opacity: 1,
+		y: [0, -30, 0, 30, 0], // simple bounce
+		x: [0, 20, 0, -20, 0], // simple horizontal bounce
+	  }}
+	  transition={{
+		duration: 4,
+		repeat: Infinity,
+		repeatType: 'loop',
+		ease: 'easeInOut',
+	  }}
+	  style={{
+		width: 120,
+		height: 120,
+		borderRadius: '50%',
+		border: `4px solid ${ACCENT2}`,
+		objectFit: 'cover',
+		boxShadow: `0 4px 32px ${ACCENT1}55`,
+	  }}
+	/>
 		<div style={{
 		  display: 'flex',
 		  flexDirection: 'column',
