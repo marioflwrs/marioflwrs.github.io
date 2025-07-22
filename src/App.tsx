@@ -29,15 +29,17 @@ const projects = [
 ]
 
 function HeroSection() {
-	// Typewriter effect
+	// Typewriter effect for the main line
+	const mainLine = "Hi, I'm Mario Ballesteros"
+	const subLine = "Creative Web Developer"
 	const [displayed, setDisplayed] = useState('')
 	const [done, setDone] = useState(false)
 	useState(() => {
 		let i = 0
 		const interval = setInterval(() => {
-			setDisplayed(heroText.slice(0, i + 1))
+			setDisplayed(mainLine.slice(0, i + 1))
 			i++
-			if (i === heroText.length) {
+			if (i === mainLine.length) {
 				clearInterval(interval)
 				setDone(true)
 			}
@@ -46,60 +48,103 @@ function HeroSection() {
 	})
 
 	return (
-	<section
-	  style={{
-		width: '100vw',
-		height: '100vh',
-		background: heroBg,
-		display: 'flex',
-		flexDirection: 'column',
-		alignItems: 'center',
-		justifyContent: 'center',
-		position: 'relative',
-		overflow: 'hidden',
-	  }}
-	  id="hero"
-	>
-			<motion.img
-				src="/avatar.png" // <-- Use your image from public/
-				alt="Mario Flores"
-				initial={{ scale: 0.7, opacity: 0, y: 40 }}
-				animate={{ scale: 1, opacity: 1, y: 0 }}
-				transition={{ duration: 0.8, ease: 'easeOut' }}
-				style={{
-					width: 120,
-					height: 120,
-					borderRadius: '50%',
-					border: `4px solid ${ACCENT2}`,
-					marginBottom: 32,
-					objectFit: 'cover',
-					boxShadow: `0 4px 32px ${ACCENT1}55`,
-				}}
-			/>
-			<motion.h1
-				initial={{ opacity: 0, y: 30 }}
-				animate={{ opacity: 1, y: 0 }}
-				transition={{ delay: 0.5, duration: 0.7 }}
-				style={{
-					color: '#fff',
-					fontSize: '2rem',
-					fontWeight: 700,
-					textAlign: 'center',
-					maxWidth: 340,
-					letterSpacing: '-1px',
-					lineHeight: 1.2,
-				}}
+	  <section
+		style={{
+		  width: '100vw',
+		  height: '100vh',
+		  background: heroBg,
+		  display: 'flex',
+		  flexDirection: 'row',
+		  alignItems: 'center',
+		  justifyContent: 'center',
+		  position: 'relative',
+		  overflow: 'hidden',
+		  gap: 32,
+		}}
+		id="hero"
+	  >
+		<motion.img
+		  src="/avatar.png"
+		  alt="Mario Ballesteros"
+		  initial={{ scale: 0.7, opacity: 0, y: 40 }}
+		  animate={{ scale: 1, opacity: 1, y: 0 }}
+		  transition={{ duration: 0.8, ease: 'easeOut' }}
+		  style={{
+			width: 120,
+			height: 120,
+			borderRadius: '50%',
+			border: `4px solid ${ACCENT2}`,
+			objectFit: 'cover',
+			boxShadow: `0 4px 32px ${ACCENT1}55`,
+		  }}
+		/>
+		<div style={{
+		  display: 'flex',
+		  flexDirection: 'column',
+		  alignItems: 'flex-start',
+		  maxWidth: 500,
+		  minWidth: 320,
+		}}>
+		  <motion.h1
+			initial={{ opacity: 0, y: 30 }}
+			animate={{ opacity: 1, y: 0 }}
+			transition={{ delay: 0.5, duration: 0.7 }}
+			style={{
+			  fontFamily: 'monospace',
+			  color: '#fff',
+			  fontSize: '2.2rem',
+			  fontWeight: 700,
+			  textAlign: 'left',
+			  letterSpacing: '-1px',
+			  lineHeight: 1.2,
+			  margin: 0,
+			  width: '100%',
+			  whiteSpace: 'nowrap',
+			  background: 'rgba(30, 30, 40, 0.95)',
+			  borderRadius: 10,
+			  padding: '1.2rem 2rem',
+			  boxShadow: '0 4px 24px rgba(0,0,0,0.18)',
+			  borderLeft: `6px solid ${ACCENT1}`,
+			  borderBottom: `2px solid ${ACCENT2}`,
+			  position: 'relative',
+			  overflow: 'hidden',
+			  minWidth: 320,
+			  maxWidth: 500,
+			  display: 'block',
+			}}
+		  >
+			{displayed}
+			<motion.span
+			  animate={{ opacity: done ? 0 : [0, 1, 0] }}
+			  transition={{ repeat: Infinity, duration: 1 }}
+			  style={{
+				display: 'inline-block',
+				color: ACCENT2,
+				fontWeight: 900,
+			  }}
 			>
-				{displayed}
-				<motion.span
-					animate={{ opacity: done ? 0 : [0, 1, 0] }}
-					transition={{ repeat: Infinity, duration: 1 }}
-					style={{ display: 'inline-block' }}
-				>
-					|
-				</motion.span>
-			</motion.h1>
-		</section>
+			  |
+			</motion.span>
+		  </motion.h1>
+		  {done && (
+			<motion.div
+			  initial={{ opacity: 0, y: 10 }}
+			  animate={{ opacity: 1, y: 0 }}
+			  transition={{ delay: 0.2, duration: 0.5 }}
+			  style={{
+				color: '#fff',
+				fontSize: '1.1rem',
+				fontWeight: 400,
+				opacity: 0.85,
+				marginTop: 8,
+				fontFamily: 'monospace',
+			  }}
+			>
+			  {subLine}
+			</motion.div>
+		  )}
+		</div>
+	  </section>
 	)
 }
 
@@ -154,11 +199,11 @@ function ProjectsSection() {
 					dragConstraints={{ left: 0, right: 0 }}
 					dragElastic={0.2}
 					onDragEnd={(_, info) => {
-    if (info.offset.x < -60) {
-      goTo(active + 1)
-    } else if (info.offset.x > 60) {
-      goTo(active - 1)
-    }
+	if (info.offset.x < -60) {
+	  goTo(active + 1)
+	} else if (info.offset.x > 60) {
+	  goTo(active - 1)
+	}
   }}
 					style={{
 						background: '#f9f9f9',
@@ -188,7 +233,7 @@ function ProjectsSection() {
 							background: ACCENT1,
 							padding: '0.5rem 1.2rem',
 							borderRadius: 24,
-						 textDecoration: 'none',
+							textDecoration: 'none',
 							fontWeight: 600,
 							fontSize: '1rem',
 							transition: 'background 0.2s',
@@ -238,8 +283,8 @@ function ProjectsSection() {
 function ContactSection() {
   return (
 	<section
-	  id="contact"
-	  style={{
+		id="contact"
+		style={{
 		width: '100vw',
 		height: '100vh',
 		background: '#fff',
@@ -249,7 +294,7 @@ function ContactSection() {
 		justifyContent: 'center',
 		position: 'relative',
 		overflow: 'hidden',
-	  }}
+		}}
 	>
 			{/* Floating background elements */}
 			<motion.div
@@ -337,11 +382,11 @@ function App() {
   // Handle wheel (desktop)
   useEffect(() => {
 	const onWheel = (e: WheelEvent) => {
-	  if (e.deltaY > 40) {
+		if (e.deltaY > 40) {
 		setSectionIdx(idx => Math.min(idx + 1, sections.length - 1))
-	  } else if (e.deltaY < -40) {
+		} else if (e.deltaY < -40) {
 		setSectionIdx(idx => Math.max(idx - 1, 0))
-	  }
+		}
 	}
 	window.addEventListener('wheel', onWheel, { passive: false })
 	return () => window.removeEventListener('wheel', onWheel)
@@ -355,20 +400,20 @@ function App() {
 	if (touchStartY.current === null) return
 	const deltaY = e.changedTouches[0].clientY - touchStartY.current
 	if (deltaY < -50) {
-	  setSectionIdx(idx => Math.min(idx + 1, sections.length - 1))
+		setSectionIdx(idx => Math.min(idx + 1, sections.length - 1))
 	} else if (deltaY > 50) {
-	  setSectionIdx(idx => Math.max(idx - 1, 0))
+		setSectionIdx(idx => Math.max(idx - 1, 0))
 	}
 	touchStartY.current = null
   }
 
   return (
 	<div
-	  style={{ width: '100vw', height: '100vh', overflow: 'hidden', position: 'relative' }}
-	  onTouchStart={onTouchStart}
-	  onTouchEnd={onTouchEnd}
+		style={{ width: '100vw', height: '100vh', overflow: 'hidden', position: 'relative' }}
+		onTouchStart={onTouchStart}
+		onTouchEnd={onTouchEnd}
 	>
-	  <motion.div
+		<motion.div
 		key={sectionIdx}
 		initial={{ y: 60, opacity: 0 }}
 		animate={{ y: 0, opacity: 1 }}
@@ -387,7 +432,7 @@ function App() {
 			  width: 10,
 			  height: 10,
 			  borderRadius: '50%',
-			  background: i === sectionIdx ? ACCENT2 : '#ddd',
+			  background: i === sectionIdx ? ACCENT1 : '#ddd',
 			  display: 'inline-block',
 			  margin: 2,
 			  transition: 'background 0.2s',
