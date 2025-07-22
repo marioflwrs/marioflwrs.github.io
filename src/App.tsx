@@ -150,6 +150,16 @@ function ProjectsSection() {
 					exit={{ x: -80, opacity: 0, scale: 0.95 }}
 					transition={{ duration: 0.5, type: 'spring' }}
 					whileHover={{ scale: 1.04, boxShadow: `0 8px 32px ${ACCENT1}33` }}
+					drag="x"
+					dragConstraints={{ left: 0, right: 0 }}
+					dragElastic={0.2}
+					onDragEnd={(_, info) => {
+    if (info.offset.x < -60) {
+      goTo(active + 1)
+    } else if (info.offset.x > 60) {
+      goTo(active - 1)
+    }
+  }}
 					style={{
 						background: '#f9f9f9',
 						borderRadius: 20,
@@ -164,6 +174,7 @@ function ProjectsSection() {
 						display: 'flex',
 						flexDirection: 'column',
 						alignItems: 'center',
+						touchAction: 'pan-y', // allows horizontal drag on mobile
 					}}
 				>
 					<h3 style={{ color: ACCENT2, marginBottom: 8 }}>{projects[active].title}</h3>
@@ -177,7 +188,7 @@ function ProjectsSection() {
 							background: ACCENT1,
 							padding: '0.5rem 1.2rem',
 							borderRadius: 24,
-							textDecoration: 'none',
+						 textDecoration: 'none',
 							fontWeight: 600,
 							fontSize: '1rem',
 							transition: 'background 0.2s',
