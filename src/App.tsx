@@ -1,14 +1,14 @@
 import './App.css'
 import { useRef, useState, useEffect } from 'react'
 import type { TouchEvent } from 'react'
-import { motion, useInView } from 'framer-motion'
+import { motion } from 'framer-motion'
 
 const ACCENT1 = '#D732AA'
 const ACCENT2 = '#FB2702'
 
 const heroBg = `linear-gradient(135deg, ${ACCENT1} 0%, ${ACCENT2} 100%)`
 
-const heroText = "Hi, I'm Mario Flores — Creative Web Developer"
+const heroText = "Hi, I'm Mario Ballesteros — Creative Web Developer"
 
 const projects = [
 	{
@@ -45,7 +45,7 @@ function HeroSection() {
 		return () => clearInterval(interval)
 	})
 
-  return (
+	return (
 	<section
 	  style={{
 		width: '100vw',
@@ -61,7 +61,7 @@ function HeroSection() {
 	  id="hero"
 	>
 			<motion.img
-				src="https://avatars.githubusercontent.com/u/your-github-id?v=4"
+				src="/avatar.png" // <-- Use your image from public/
 				alt="Mario Flores"
 				initial={{ scale: 0.7, opacity: 0, y: 40 }}
 				animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -105,7 +105,6 @@ function HeroSection() {
 
 function ProjectsSection() {
 	const ref = useRef(null)
-	const inView = useInView(ref, { once: true, margin: '-100px' })
 	const [active, setActive] = useState(0)
 
 	// Carousel navigation (mobile swipe/desktop arrows)
@@ -275,7 +274,7 @@ function ContactSection() {
 			<div style={{ position: 'relative', zIndex: 1, textAlign: 'center', width: '100%' }}>
 				<h2 style={{ color: ACCENT2, fontSize: '2rem', marginBottom: 24 }}>Contact</h2>
 				<motion.a
-					href="mailto:mario@example.com"
+					href="mailto:maballesteros@protonmail.com"
 					target="_blank"
 					rel="noopener noreferrer"
 					initial={{ scale: 1 }}
@@ -299,7 +298,7 @@ function ContactSection() {
 					Say Hello
 				</motion.a>
 				<div style={{ marginTop: 16, display: 'flex', justifyContent: 'center', gap: 24 }}>
-					<a href="mailto:mario@example.com" target="_blank" rel="noopener noreferrer" style={{ color: ACCENT1, fontSize: 28 }}>
+					<a href="mailto:maballesteros@protonmail.com" target="_blank" rel="noopener noreferrer" style={{ color: ACCENT1, fontSize: 28 }}>
 						📧
 					</a>
 					<a href="https://linkedin.com/in/marioflwrs" target="_blank" rel="noopener noreferrer" style={{ color: ACCENT2, fontSize: 28 }}>
