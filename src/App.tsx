@@ -45,121 +45,147 @@ function HeroSection() {
 		return () => clearInterval(interval)
 	})
 
-	return (
-	  <section
+  // Mobile detection
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+	const check = () => setIsMobile(window.innerWidth <= 700)
+	check()
+	window.addEventListener('resize', check)
+	return () => window.removeEventListener('resize', check)
+  }, [])
+
+  return (
+	<section
+	  id="hero"
+	  style={{
+		width: '100vw',
+		height: '100vh',
+		background: heroBg,
+		display: 'flex',
+		flexDirection: isMobile ? 'column' : 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		position: 'relative',
+		overflow: 'hidden',
+		gap: 32,
+		minHeight: '100vh',
+		padding: 0,
+	  }}
+	>
+	  <motion.img
+		id="hero-avatar"
+		src="/avatar.png"
+		alt="Mario Ballesteros"
+		initial={{ opacity: 0, scale: 0.7, y: 40 }}
+		animate={isMobile
+		  ? { opacity: 1, scale: 1, y: 0, x: 0 }
+		  : {
+			  scale: [0.4, 2.2, 0.6, 1.8, 0.5, 2.5, 0.4],
+			  opacity: 1,
+			  y: [0, -18, 0, 18, 0],
+			  x: [0, 12, 0, -12, 0],
+			}
+		}
+		transition={isMobile
+		  ? { duration: 0.8, ease: 'easeOut' }
+		  : {
+			  scale: { duration: 10, repeat: Infinity, repeatType: 'loop', ease: 'easeInOut' },
+			  opacity: { duration: 0.8, ease: 'easeOut' },
+			  y: { duration: 8, repeat: Infinity, repeatType: 'loop', ease: 'easeInOut' },
+			  x: { duration: 10, repeat: Infinity, repeatType: 'loop', ease: 'easeInOut' },
+			}
+		}
 		style={{
-		  width: '100vw',
-		  height: '100vh',
-		  background: heroBg,
-		  display: 'flex',
-		  flexDirection: 'row',
-		  alignItems: 'center',
-		  justifyContent: 'center',
-		  position: 'relative',
-		  overflow: 'hidden',
-		  gap: 32,
+		  width: isMobile ? '28vw' : 'min(10vw, 72px)',
+		  height: isMobile ? '28vw' : 'min(10vw, 72px)',
+		  minWidth: 64,
+		  minHeight: 64,
+		  maxWidth: isMobile ? 120 : 120,
+		  maxHeight: isMobile ? 120 : 120,
+		  borderRadius: '50%',
+		  border: `4px solid ${ACCENT2}`,
+		  objectFit: 'cover',
+		  boxShadow: `0 4px 32px ${ACCENT1}55`,
+		  position: isMobile ? 'static' : 'relative',
+		  margin: isMobile ? '0 auto 18px auto' : 0,
+		  willChange: 'transform',
 		}}
-		id="hero"
-	  >
-  <motion.img
-	src="/avatar.png"
-	alt="Mario Ballesteros"
-	initial={{ scale: 0.7, opacity: 0, y: 40 }}
-	animate={{
-	  scale: [0.4, 2.2, 0.6, 1.8, 0.5, 2.5, 0.4],
-	  opacity: 1,
-	  y: [0, -18, 0, 18, 0],
-	  x: [0, 12, 0, -12, 0],
-	}}
-	transition={{
-	  scale: { duration: 10, repeat: Infinity, repeatType: 'loop', ease: 'easeInOut' },
-	  opacity: { duration: 0.8, ease: 'easeOut' },
-	  y: { duration: 8, repeat: Infinity, repeatType: 'loop', ease: 'easeInOut' },
-	  x: { duration: 10, repeat: Infinity, repeatType: 'loop', ease: 'easeInOut' },
-	}}
-	style={{
-	  width: 'min(12vw, 96px)',
-	  height: 'min(12vw, 96px)',
-	  minWidth: 32,
-	  minHeight: 32,
-	  maxWidth: 192,
-	  maxHeight: 192,
-	  borderRadius: '50%',
-	  border: `4px solid ${ACCENT2}`,
-	  objectFit: 'cover',
-	  boxShadow: `0 4px 32px ${ACCENT1}55`,
-	  position: 'relative',
-	  willChange: 'transform',
-	}}
-  />
-		<div style={{
+	  />
+	  <div
+		id="hero-text"
+		style={{
 		  display: 'flex',
 		  flexDirection: 'column',
-		  alignItems: 'flex-start',
+		  alignItems: 'center',
 		  maxWidth: 500,
-		  minWidth: 320,
-		}}>
-		  <motion.h1
-			initial={{ opacity: 0, y: 30 }}
-			animate={{ opacity: 1, y: 0 }}
-			transition={{ delay: 0.5, duration: 0.7 }}
+		  minWidth: 0,
+		  paddingLeft: 0,
+		  paddingRight: 0,
+		}}
+	  >
+		<motion.h1
+		  initial={{ opacity: 0, y: 30 }}
+		  animate={{ opacity: 1, y: 0 }}
+		  transition={{ delay: 0.5, duration: 0.7 }}
+		  style={{
+			fontFamily: 'monospace',
+			color: '#fff',
+			fontSize: isMobile ? '1.2rem' : '2.2rem',
+			fontWeight: 700,
+			textAlign: 'center',
+			letterSpacing: '-1px',
+			lineHeight: 1.2,
+			margin: 0,
+			width: '100%',
+			whiteSpace: 'nowrap',
+			background: 'rgba(30, 30, 40, 0.95)',
+			borderRadius: 10,
+			padding: isMobile ? '0.7rem 0.7rem' : '1.2rem 2rem',
+			boxShadow: '0 4px 24px rgba(0,0,0,0.18)',
+			borderLeft: `6px solid ${ACCENT1}`,
+			borderBottom: `2px solid ${ACCENT2}`,
+			position: 'relative',
+			overflow: 'hidden',
+			minWidth: 0,
+			maxWidth: 500,
+			display: 'block',
+		  }}
+		>
+		  {displayed}
+		  <motion.span
+			animate={{ opacity: done ? 0 : [0, 1, 0] }}
+			transition={{ repeat: Infinity, duration: 1 }}
 			style={{
-			  fontFamily: 'monospace',
-			  color: '#fff',
-			  fontSize: '2.2rem',
-			  fontWeight: 700,
-			  textAlign: 'left',
-			  letterSpacing: '-1px',
-			  lineHeight: 1.2,
-			  margin: 0,
-			  width: '100%',
-			  whiteSpace: 'nowrap',
-			  background: 'rgba(30, 30, 40, 0.95)',
-			  borderRadius: 10,
-			  padding: '1.2rem 2rem',
-			  boxShadow: '0 4px 24px rgba(0,0,0,0.18)',
-			  borderLeft: `6px solid ${ACCENT1}`,
-			  borderBottom: `2px solid ${ACCENT2}`,
-			  position: 'relative',
-			  overflow: 'hidden',
-			  minWidth: 320,
-			  maxWidth: 500,
-			  display: 'block',
+			  display: 'inline-block',
+			  color: ACCENT2,
+			  fontWeight: 900,
 			}}
 		  >
-			{displayed}
-			<motion.span
-			  animate={{ opacity: done ? 0 : [0, 1, 0] }}
-			  transition={{ repeat: Infinity, duration: 1 }}
-			  style={{
-				display: 'inline-block',
-				color: ACCENT2,
-				fontWeight: 900,
-			  }}
-			>
-			  |
-			</motion.span>
-		  </motion.h1>
-		  {done && (
-			<motion.div
-			  initial={{ opacity: 0, y: 10 }}
-			  animate={{ opacity: 1, y: 0 }}
-			  transition={{ delay: 0.2, duration: 0.5 }}
-			  style={{
-				color: '#fff',
-				fontSize: '1.1rem',
-				fontWeight: 400,
-				opacity: 0.85,
-				marginTop: 8,
-				fontFamily: 'monospace',
-			  }}
-			>
-			  {subLine}
-			</motion.div>
-		  )}
-		</div>
-	  </section>
-	)
+			|
+		  </motion.span>
+		</motion.h1>
+		{done && (
+		  <motion.div
+			className="subline"
+			initial={{ opacity: 0, y: 10 }}
+			animate={{ opacity: 1, y: 0 }}
+			transition={{ delay: 0.2, duration: 0.5 }}
+			style={{
+			  color: '#fff',
+			  fontSize: isMobile ? '0.95rem' : '1.1rem',
+			  fontWeight: 400,
+			  opacity: 0.85,
+			  marginTop: 8,
+			  fontFamily: 'monospace',
+			  textAlign: 'center',
+			}}
+		  >
+			{subLine}
+		  </motion.div>
+		)}
+	  </div>
+	</section>
+  )
 }
 
 function ProjectsSection() {
