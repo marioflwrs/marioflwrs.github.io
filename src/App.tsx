@@ -3,9 +3,8 @@ import './App.css'
 import { useRef, useState, useEffect } from 'react'
 import type { TouchEvent } from 'react'
 import { motion } from 'framer-motion'
-import { FaArrowsAltV } from 'react-icons/fa'
+import { FaArrowsAltV, FaSun, FaMoon, FaArrowUp, FaArrowDown } from 'react-icons/fa'
 import { MdSwipeVertical } from 'react-icons/md'
-import { FaArrowUp, FaArrowDown } from 'react-icons/fa'
 
 const ACCENT1 = '#D732AA'
 const ACCENT2 = '#FF3C1A'
@@ -47,7 +46,7 @@ function ThemeToggle({ darkMode, setDarkMode }: { darkMode: boolean, setDarkMode
 			transition={{ type: 'spring', stiffness: 300, damping: 30 }}
 			style={{ position: 'absolute', left: 0, right: 0, textAlign: 'center', width: '100%' }}
 		  >
-			🌙
+			<FaMoon style={{ fontSize: 28, color: '#FFD600', filter: 'drop-shadow(0 0 4px #FFD60088)' }} />
 		  </motion.span>
 		) : (
 		  <motion.span
@@ -58,7 +57,7 @@ function ThemeToggle({ darkMode, setDarkMode }: { darkMode: boolean, setDarkMode
 			transition={{ type: 'spring', stiffness: 300, damping: 30 }}
 			style={{ position: 'absolute', left: 0, right: 0, textAlign: 'center', width: '100%' }}
 		  >
-			☀️
+			<FaSun style={{ fontSize: 28, color: '#FFD600', filter: 'drop-shadow(0 0 4px #FFD60088)' }} />
 		  </motion.span>
 		)}
 	  </AnimatePresence>
