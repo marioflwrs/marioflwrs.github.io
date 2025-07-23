@@ -23,8 +23,14 @@ const projects = [
 const ProjectsSection: React.FC = () => {
   const ref = useRef<HTMLDivElement | null>(null);
   const [active, setActive] = useState(0);
+  const [dotSpin, setDotSpin] = useState<'spin-right' | 'spin-left' | ''>('');
 
-  const goTo = (idx: number) => setActive((idx + projects.length) % projects.length);
+  const goTo = (idx: number) => {
+    const direction = idx > active ? 'spin-right' : 'spin-left';
+    setDotSpin(direction);
+    setActive((idx + projects.length) % projects.length);
+    setTimeout(() => setDotSpin(''), 300); // Remove spin class after animation
+  };
 
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
@@ -100,7 +106,11 @@ const ProjectsSection: React.FC = () => {
           <span
             key={i}
             onClick={() => goTo(i)}
-            className={i === active ? 'carousel-dot active' : 'carousel-dot'}
+            className={
+              'carousel-dot' +
+              (i === active ? ' active' : '') +
+              (i === active && dotSpin ? ` ${dotSpin}` : '')
+            }
           />
         ))}
       </div>

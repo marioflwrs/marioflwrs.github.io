@@ -136,7 +136,7 @@ body.dark, .dark {
   color: var(--accent1);
   margin-bottom: 24px;
   font-size: 2rem;
-  text-shadow: 0 2px 8px #0008;
+  text-shadow: 0 4px 12px var(--accent1), 0 2px 4px var(--accent1)cc;
 }
 .projects-carousel {
   width: 100vw;
@@ -175,17 +175,21 @@ body.dark, .dark {
   touch-action: pan-y;
   box-shadow: 0 0 0 2px var(--accent1), 0 0 40px 12px var(--accent1)cc, 0 0 80px 24px var(--accent1)55;
   transition: box-shadow 0.2s;
+  color: var(--color-text);
 }
 .project-card.active {
   box-shadow: 0 2px 16px var(--accent1)55;
+  color: var(--color-text);
 }
+/* Ensure all text uses var(--color-text) for proper contrast in light mode */
 .project-title {
   color: var(--accent2);
   margin-bottom: 8px;
-  text-shadow: 0 2px 4px #0008;
+  text-shadow: 0 2px 4px var(--accent1)88;
+  /* fallback to text color if accent2 is too light */
 }
 .project-desc {
-  color: var(--color-muted);
+  color: var(--color-text);
   margin-bottom: 16px;
 }
 .project-link {
@@ -222,6 +226,29 @@ body.dark, .dark {
 }
 .carousel-dot.active {
   background: var(--accent2);
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  border-radius: 0;
+  width: 12px;
+  height: 9px;
+  transition: background 0.2s, clip-path 0.2s, width 0.2s, height 0.2s, transform 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* Spin right animation */
+.carousel-dot.active.spin-right {
+  animation: spin-right 0.25s linear;
+}
+@keyframes spin-right {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
+}
+
+/* Spin left animation */
+.carousel-dot.active.spin-left {
+  animation: spin-left 0.25s linear;
+}
+@keyframes spin-left {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(-360deg);}
 }
 
 /* Contact Section */
@@ -263,6 +290,7 @@ body.dark, .dark {
   text-align: center;
   width: 100%;
 }
+/* Contact section text color improvements */
 .contact-title {
   color: var(--accent2);
   font-size: 2rem;
@@ -297,6 +325,7 @@ body.dark, .dark {
   font-size: 28px;
   text-shadow: 0 1px 4px #0008;
   text-decoration: none;
+  color: var(--color-text);
 }
 .contact-icon.email {
   color: var(--accent1);
