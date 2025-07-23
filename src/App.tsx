@@ -58,6 +58,7 @@ function ThemeToggle({ darkMode, setDarkMode }: { darkMode: boolean, setDarkMode
 			  }} />
 			  {/* Grey clouds with animation */}
 			  <motion.span
+				initial={true}
 				style={{ position: 'absolute', left: 9, top: 2, zIndex: 4 }}
 				animate={{ x: [0, 3, -2, 0], y: [0, -1, 0, 1, 0] }}
 				transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
@@ -65,6 +66,7 @@ function ThemeToggle({ darkMode, setDarkMode }: { darkMode: boolean, setDarkMode
 				<FaCloud style={{ fontSize: 18, color: '#bbb', opacity: 1 }} />
 			  </motion.span>
 			  <motion.span
+				initial={true}
 				style={{ position: 'absolute', left: 19, top: -12, zIndex: 2 }}
 				animate={{ x: [0, -2, 2, 0], y: [0, 1, 0, -1, 0] }}
 				transition={{ duration: 3.7, repeat: Infinity, ease: 'easeInOut' }}
@@ -96,6 +98,7 @@ function ThemeToggle({ darkMode, setDarkMode }: { darkMode: boolean, setDarkMode
 			  }} />
 			  {/* White clouds with animation */}
 			  <motion.span
+				initial={true}
 				style={{ position: 'absolute', left: 19, top: 5, zIndex: 3 }}
 				animate={{ x: [0, 3, -2, 0], y: [0, -1, 0, 1, 0] }}
 				transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
@@ -103,6 +106,7 @@ function ThemeToggle({ darkMode, setDarkMode }: { darkMode: boolean, setDarkMode
 				<FaCloud style={{ fontSize: 18, color: '#fff', opacity: 0.9 }} />
 			  </motion.span>
 			  <motion.span
+				initial={true}
 				style={{ position: 'absolute', left: 5, top: 3, zIndex: 3 }}
 				animate={{ x: [0, -2, 2, 0], y: [0, 1, 0, -1, 0] }}
 				transition={{ duration: 3.7, repeat: Infinity, ease: 'easeInOut' }}
