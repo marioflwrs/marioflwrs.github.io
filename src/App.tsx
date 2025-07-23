@@ -65,40 +65,32 @@ function HeroSection() {
 	src="/avatar.png"
 	alt="Mario Ballesteros"
 	initial={{ scale: 0.7, opacity: 0, y: 40 }}
-	animate={{ scale: 1, opacity: 1 }}
-	transition={{ duration: 0.8, ease: 'easeOut' }}
+	animate={{
+	  scale: [0.4, 2.2, 0.6, 1.8, 0.5, 2.5, 0.4],
+	  opacity: 1,
+	  y: [0, -18, 0, 18, 0],
+	  x: [0, 12, 0, -12, 0],
+	}}
+	transition={{
+	  scale: { duration: 10, repeat: Infinity, repeatType: 'loop', ease: 'easeInOut' },
+	  opacity: { duration: 0.8, ease: 'easeOut' },
+	  y: { duration: 8, repeat: Infinity, repeatType: 'loop', ease: 'easeInOut' },
+	  x: { duration: 10, repeat: Infinity, repeatType: 'loop', ease: 'easeInOut' },
+	}}
 	style={{
-	  width: 120,
-	  height: 120,
+	  width: 'min(12vw, 96px)',
+	  height: 'min(12vw, 96px)',
+	  minWidth: 32,
+	  minHeight: 32,
+	  maxWidth: 192,
+	  maxHeight: 192,
 	  borderRadius: '50%',
 	  border: `4px solid ${ACCENT2}`,
 	  objectFit: 'cover',
 	  boxShadow: `0 4px 32px ${ACCENT1}55`,
 	  position: 'relative',
+	  willChange: 'transform',
 	}}
-	whileHover={undefined}
-  />
-  {/* Bounce animation overlay */}
-  <motion.div
-	style={{
-	  position: 'absolute',
-	  left: 0,
-	  top: 0,
-	  width: 120,
-	  height: 120,
-	  pointerEvents: 'none',
-	}}
-	animate={{
-	  y: [0, -30, 0, 30, 0],
-	  x: [0, 20, 0, -20, 0],
-	}}
-	transition={{
-	  duration: 4,
-	  repeat: Infinity,
-	  repeatType: 'loop',
-	  ease: 'easeInOut',
-	}}
-	children={null}
   />
 		<div style={{
 		  display: 'flex',
