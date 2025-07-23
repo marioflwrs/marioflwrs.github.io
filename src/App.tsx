@@ -3,6 +3,9 @@ import './App.css'
 import { useRef, useState, useEffect } from 'react'
 import type { TouchEvent } from 'react'
 import { motion } from 'framer-motion'
+import { FaArrowsAltV } from 'react-icons/fa'
+import { MdSwipeVertical } from 'react-icons/md'
+import { FaArrowUp, FaArrowDown } from 'react-icons/fa'
 
 const ACCENT1 = '#D732AA'
 const ACCENT2 = '#FF3C1A'
@@ -308,23 +311,45 @@ function App() {
   })
   const touchStartY = useRef<number | null>(null)
 
+  // Mobile detection for hint
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+	const check = () => setIsMobile(window.innerWidth <= 700)
+	check()
+	window.addEventListener('resize', check)
+	return () => window.removeEventListener('resize', check)
+  }, [])
+
   // Apply dark mode class to body
   useEffect(() => {
 	document.body.classList.toggle('dark', darkMode)
   }, [darkMode])
 
-  // Handle wheel (desktop)
+  // Handle wheel and keyboard navigation (desktop)
   useEffect(() => {
+	if (isMobile) return;
 	const onWheel = (e: WheelEvent) => {
-		if (e.deltaY > 40) {
+	  if (e.deltaY > 40) {
 		setSectionIdx(idx => Math.min(idx + 1, sections.length - 1))
-		} else if (e.deltaY < -40) {
+	  } else if (e.deltaY < -40) {
 		setSectionIdx(idx => Math.max(idx - 1, 0))
-		}
+	  }
+	}
+	const onKeyDown = (e: KeyboardEvent) => {
+	  if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) return;
+	  if (e.key === 'ArrowDown' || e.key.toLowerCase() === 's') {
+		setSectionIdx(idx => Math.min(idx + 1, sections.length - 1))
+	  } else if (e.key === 'ArrowUp' || e.key.toLowerCase() === 'w') {
+		setSectionIdx(idx => Math.max(idx - 1, 0))
+	  }
 	}
 	window.addEventListener('wheel', onWheel, { passive: false })
-	return () => window.removeEventListener('wheel', onWheel)
-  }, [])
+	window.addEventListener('keydown', onKeyDown)
+	return () => {
+	  window.removeEventListener('wheel', onWheel)
+	  window.removeEventListener('keydown', onKeyDown)
+	}
+  }, [isMobile])
 
   // Handle swipe (mobile)
   const onTouchStart = (e: TouchEvent) => {
@@ -334,9 +359,9 @@ function App() {
 	if (touchStartY.current === null) return
 	const deltaY = e.changedTouches[0].clientY - touchStartY.current
 	if (deltaY < -50) {
-		setSectionIdx(idx => Math.min(idx + 1, sections.length - 1))
+	  setSectionIdx(idx => Math.min(idx + 1, sections.length - 1))
 	} else if (deltaY > 50) {
-		setSectionIdx(idx => Math.max(idx - 1, 0))
+	  setSectionIdx(idx => Math.max(idx - 1, 0))
 	}
 	touchStartY.current = null
   }
@@ -358,7 +383,7 @@ function App() {
 	  >
 		{sections[sectionIdx].component}
 	  </motion.div>
-	  {/* Optional: Section indicators */}
+	  {/* Section indicators */}
 	  <div style={{ position: 'absolute', right: 16, bottom: 32, display: 'flex', flexDirection: 'column', gap: 8, zIndex: 10 }}>
 		{sections.map((s, i) => (
 		  <span
@@ -375,6 +400,59 @@ function App() {
 		  />
 		))}
 	  </div>
+	  {/* Scroll/Swipe hint */}
+	  <motion.div
+		initial={{ opacity: 0, y: 20 }}
+		animate={{ opacity: 0.8, y: 0 }}
+		transition={{ delay: 1.2, duration: 0.7 }}
+		style={{
+		  position: 'absolute',
+		  left: 0,
+		  right: 0,
+		  bottom: 12,
+		  textAlign: 'center',
+		  fontSize: 18,
+		  color: darkMode ? '#fff' : '#222',
+		  letterSpacing: 1,
+		  pointerEvents: 'none',
+		  zIndex: 20,
+		  fontFamily: 'monospace',
+		  textShadow: '0 2px 8px #0008',
+		  display: 'flex',
+		  flexDirection: 'column',
+		  alignItems: 'center',
+		  gap: 2,
+		}}
+	  >
+		<span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+		  <FaArrowsAltV style={{ fontSize: 22, marginRight: 6, verticalAlign: 'middle' }} />
+		  {isMobile ? <MdSwipeVertical style={{ fontSize: 22, verticalAlign: 'middle' }} /> : 'Scroll'}
+		</span>
+		<span style={{ fontSize: 13, opacity: 0.7, marginTop: 2 }}>
+		  {isMobile ? 'Swipe' : (
+			<span style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
+			  <span style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+				<FaArrowsAltV style={{ fontSize: 15, marginRight: 2, verticalAlign: 'middle' }} />
+				Scroll
+			  </span>
+			  <span style={{ margin: '0 6px' }}>|</span>
+			  <span style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+				<b>W</b> <FaArrowUp style={{ fontSize: 13, verticalAlign: 'middle' }} />
+			  </span>
+			  <span style={{ margin: '0 2px' }}>/</span>
+			  <span style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+				<b>S</b> <FaArrowDown style={{ fontSize: 13, verticalAlign: 'middle' }} />
+			  </span>
+			  <span style={{ margin: '0 2px' }}>/</span>
+			  <span style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+				<FaArrowUp style={{ fontSize: 13, verticalAlign: 'middle' }} />
+				<FaArrowDown style={{ fontSize: 13, verticalAlign: 'middle' }} />
+			  </span>
+			  <span style={{ marginLeft: 4 }}>to navigate</span>
+			</span>
+		  )}
+		</span>
+	  </motion.div>
 	</div>
   )
 }
