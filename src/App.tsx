@@ -38,9 +38,9 @@ function ThemeToggle({ darkMode, setDarkMode }: { darkMode: boolean, setDarkMode
 		{darkMode ? (
 		  <motion.span
 			key="moon"
-			initial={{ x: 60, opacity: 0 }}
+			initial={{ x: -60, opacity: 0 }}
 			animate={{ x: 0, opacity: 1 }}
-			exit={{ x: -60, opacity: 0 }}
+			exit={{ x: 60, opacity: 0 }}
 			transition={{ type: 'spring', stiffness: 300, damping: 30 }}
 			style={{ position: 'absolute', left: 0, right: 0, textAlign: 'center', width: '100%' }}
 		  >
@@ -49,9 +49,9 @@ function ThemeToggle({ darkMode, setDarkMode }: { darkMode: boolean, setDarkMode
 		) : (
 		  <motion.span
 			key="sun"
-			initial={{ x: 60, opacity: 1 }}
+			initial={{ x: -60, opacity: 1 }}
 			animate={{ x: 0, opacity: 1 }}
-			exit={{ x: -60, opacity: 0 }}
+			exit={{ x: 60, opacity: 0 }}
 			transition={{ type: 'spring', stiffness: 300, damping: 30 }}
 			style={{ position: 'absolute', left: 0, right: 0, textAlign: 'center', width: '100%' }}
 		  >
