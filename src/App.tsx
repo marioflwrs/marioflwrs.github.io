@@ -7,6 +7,8 @@ import { motion } from 'framer-motion'
 const ACCENT1 = '#D732AA'
 const ACCENT2 = '#FF3C1A'
 // Theme toggle button
+import { AnimatePresence } from 'framer-motion'
+
 function ThemeToggle({ darkMode, setDarkMode }: { darkMode: boolean, setDarkMode: (v: boolean) => void }) {
   return (
 	<button
@@ -24,9 +26,39 @@ function ThemeToggle({ darkMode, setDarkMode }: { darkMode: boolean, setDarkMode
 		cursor: 'pointer',
 		color: darkMode ? '#FFD600' : '#222',
 		transition: 'color 0.2s',
+		overflow: 'hidden',
+		width: 48,
+		height: 48,
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
 	  }}
 	>
-	  {darkMode ? '🌙' : '☀️'}
+	  <AnimatePresence mode="wait" initial={false}>
+		{darkMode ? (
+		  <motion.span
+			key="moon"
+			initial={{ x: 60, opacity: 0 }}
+			animate={{ x: 0, opacity: 1 }}
+			exit={{ x: -60, opacity: 0 }}
+			transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+			style={{ position: 'absolute', left: 0, right: 0, textAlign: 'center', width: '100%' }}
+		  >
+			🌙
+		  </motion.span>
+		) : (
+		  <motion.span
+			key="sun"
+			initial={{ x: 60, opacity: 1 }}
+			animate={{ x: 0, opacity: 1 }}
+			exit={{ x: -60, opacity: 0 }}
+			transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+			style={{ position: 'absolute', left: 0, right: 0, textAlign: 'center', width: '100%' }}
+		  >
+			☀️
+		  </motion.span>
+		)}
+	  </AnimatePresence>
 	</button>
   )
 }
