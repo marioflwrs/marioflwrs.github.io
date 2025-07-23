@@ -1,3 +1,16 @@
+/* Hero subline (h2) color for light/dark mode */
+.hero-sub {
+  color: #222;
+  font-size: 1.1rem;
+  font-weight: 400;
+  opacity: 0.92;
+  margin-top: 8px;
+  font-family: monospace;
+  text-align: center;
+}
+body.dark .hero-sub, .dark .hero-sub {
+  color: var(--color-muted);
+}
 /* Theme variables */
 :root {
   --color-bg: #fff;
@@ -86,7 +99,7 @@ body.dark, .dark {
   background: var(--color-bg-card);
   border-radius: 10px;
   padding: 1.2rem 2rem;
-  box-shadow: 0 4px 24px #0008;
+  box-shadow: 0 4px 24px #fff8;
   border-left: 6px solid var(--accent2);
   border-bottom: 2px solid var(--accent1);
   position: relative;
@@ -107,13 +120,19 @@ body.dark, .dark {
   font-weight: 900;
 }
 .subline {
-  color: var(--color-muted);
+  color: #0008;
   font-size: 1.1rem;
   font-weight: 400;
-  opacity: 0.85;
+  opacity: 0.92;
   margin-top: 8px;
   font-family: monospace;
   text-align: center;
+}
+body.dark .subline, .dark .subline {
+  color: var(--color-text);
+}
+body.dark .subline, .dark .subline {
+  color: var(--color-muted);
 }
 .subline.mobile {
   font-size: 0.95rem;
