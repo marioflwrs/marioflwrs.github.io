@@ -4,9 +4,9 @@ import type { TouchEvent } from 'react'
 import { motion } from 'framer-motion'
 
 const ACCENT1 = '#D732AA'
-const ACCENT2 = '#FB2702'
+const ACCENT2 = '#FF3C1A'
 
-const heroBg = `linear-gradient(135deg, ${ACCENT1} 0%, ${ACCENT2} 100%)`
+const heroBg = `linear-gradient(135deg, #111216 0%, #1A1C22 100%)`
 
 const projects = [
 	{
@@ -103,7 +103,7 @@ function HeroSection() {
 		  maxWidth: isMobile ? 120 : 120,
 		  maxHeight: isMobile ? 120 : 120,
 		  borderRadius: '50%',
-		  border: `4px solid ${ACCENT2}`,
+		  border: `4px solid ${ACCENT1}`,
 		  objectFit: 'cover',
 		  boxShadow: `0 4px 32px ${ACCENT1}55`,
 		  position: isMobile ? 'static' : 'relative',
@@ -129,21 +129,21 @@ function HeroSection() {
 		  transition={{ delay: 0.5, duration: 0.7 }}
 		  style={{
 			fontFamily: 'monospace',
-			color: '#fff',
+			color: '#F1F1F1',
 			fontSize: isMobile ? '1.2rem' : '2.2rem',
 			fontWeight: 700,
 			textAlign: 'center',
 			letterSpacing: '-1px',
 			lineHeight: 1.2,
-			margin: 0,
-			width: '100%',
+			margin: '0 auto',
+			width: isMobile ? '60%' : '70%',
 			whiteSpace: 'nowrap',
-			background: 'rgba(30, 30, 40, 0.95)',
+			background: '#1A1C22',
 			borderRadius: 10,
 			padding: isMobile ? '0.7rem 0.7rem' : '1.2rem 2rem',
-			boxShadow: '0 4px 24px rgba(0,0,0,0.18)',
-			borderLeft: `6px solid ${ACCENT1}`,
-			borderBottom: `2px solid ${ACCENT2}`,
+			boxShadow: '0 4px 24px #0008',
+			borderLeft: `6px solid ${ACCENT2}`,
+			borderBottom: `2px solid ${ACCENT1}`,
 			position: 'relative',
 			overflow: 'hidden',
 			minWidth: 0,
@@ -171,7 +171,7 @@ function HeroSection() {
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ delay: 0.2, duration: 0.5 }}
 			style={{
-			  color: '#fff',
+			  color: '#BBBBBB',
 			  fontSize: isMobile ? '0.95rem' : '1.1rem',
 			  fontWeight: 400,
 			  opacity: 0.85,
@@ -195,6 +195,15 @@ function ProjectsSection() {
 	// Carousel navigation (mobile swipe/desktop arrows)
 	const goTo = (idx: number) => setActive((idx + projects.length) % projects.length)
 
+  // Mobile detection (reuse logic from HeroSection)
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+	const check = () => setIsMobile(window.innerWidth <= 700)
+	check()
+	window.addEventListener('resize', check)
+	return () => window.removeEventListener('resize', check)
+  }, [])
+
   return (
 	<section
 	  ref={ref}
@@ -202,7 +211,7 @@ function ProjectsSection() {
 	  style={{
 		width: '100vw',
 		height: '100vh',
-		background: '#fff',
+		background: '#111216',
 		display: 'flex',
 		flexDirection: 'column',
 		alignItems: 'center',
@@ -211,94 +220,101 @@ function ProjectsSection() {
 		position: 'relative',
 	  }}
 	>
-			<h2 style={{ color: ACCENT1, marginBottom: 24, fontSize: '2rem' }}>Projects</h2>
-			<div style={{ width: '100vw', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-				<button
-					aria-label="Previous"
-					onClick={() => goTo(active - 1)}
-					style={{
-						background: 'none',
-						border: 'none',
-						fontSize: 32,
-						color: ACCENT1,
-						cursor: 'pointer',
-						marginRight: 8,
-						opacity: 0.7,
-					}}
-				>
-					‹
-				</button>
-				<motion.div
-					key={active}
-					initial={{ x: 80, opacity: 0, scale: 0.95 }}
-					animate={{ x: 0, opacity: 1, scale: 1 }}
-					exit={{ x: -80, opacity: 0, scale: 0.95 }}
-					transition={{ duration: 0.5, type: 'spring' }}
-					whileHover={{ scale: 1.04, boxShadow: `0 8px 32px ${ACCENT1}33` }}
-					drag="x"
-					dragConstraints={{ left: 0, right: 0 }}
-					dragElastic={0.2}
-					onDragEnd={(_, info) => {
-	if (info.offset.x < -60) {
-	  goTo(active + 1)
-	} else if (info.offset.x > 60) {
-	  goTo(active - 1)
-	}
-  }}
-					style={{
-						background: '#f9f9f9',
-						borderRadius: 20,
-						minWidth: 260,
-						maxWidth: 320,
-						minHeight: 220,
-						padding: '2rem 1.5rem',
-						border: `2px solid ${ACCENT1}22`,
-						cursor: 'pointer',
-						position: 'relative',
-						boxShadow: active === 0 ? `0 2px 16px ${ACCENT2}22` : undefined,
-						display: 'flex',
-						flexDirection: 'column',
-						alignItems: 'center',
-						touchAction: 'pan-y', // allows horizontal drag on mobile
-					}}
-				>
-					<h3 style={{ color: ACCENT2, marginBottom: 8 }}>{projects[active].title}</h3>
-					<p style={{ color: '#222', marginBottom: 16 }}>{projects[active].desc}</p>
-					<a
-						href={projects[active].link}
-						target="_blank"
-						rel="noopener noreferrer"
-						style={{
-							color: '#fff',
-							background: ACCENT1,
-							padding: '0.5rem 1.2rem',
-							borderRadius: 24,
-							textDecoration: 'none',
-							fontWeight: 600,
-							fontSize: '1rem',
-							transition: 'background 0.2s',
-							marginTop: 'auto',
-						}}
-					>
-						View Project
-					</a>
-				</motion.div>
-				<button
-					aria-label="Next"
-					onClick={() => goTo(active + 1)}
-					style={{
-						background: 'none',
-						border: 'none',
-						fontSize: 32,
-						color: ACCENT2,
-						cursor: 'pointer',
-						marginLeft: 8,
-						opacity: 0.7,
-					}}
-				>
-					›
-				</button>
-			</div>
+	  <h2 style={{ color: ACCENT1, marginBottom: 24, fontSize: '2rem', textShadow: '0 2px 8px #0008' }}>Projects</h2>
+	  <div style={{ width: '100vw', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+		{!isMobile && (
+		  <button
+			aria-label="Previous"
+			onClick={() => goTo(active - 1)}
+			style={{
+			  background: 'none',
+			  border: 'none',
+			  fontSize: 32,
+			  color: ACCENT1,
+			  cursor: 'pointer',
+			  marginRight: 8,
+			  opacity: 0.7,
+			}}
+		  >
+			‹
+		  </button>
+		)}
+		<motion.div
+		  key={active}
+		  initial={{ x: 80, opacity: 0, scale: 0.95 }}
+		  animate={{ x: 0, opacity: 1, scale: 1 }}
+		  exit={{ x: -80, opacity: 0, scale: 0.95 }}
+		  transition={{ duration: 0.5, type: 'spring' }}
+		  whileHover={{ scale: 1.04, boxShadow: `0 8px 32px ${ACCENT1}33` }}
+		  drag="x"
+		  dragConstraints={{ left: 0, right: 0 }}
+		  dragElastic={0.2}
+		  onDragEnd={(_, info) => {
+			if (info.offset.x < -60) {
+			  goTo(active + 1)
+			} else if (info.offset.x > 60) {
+			  goTo(active - 1)
+			}
+		  }}
+		  style={{
+			background: '#1A1C22',
+			borderRadius: 20,
+			minWidth: 260,
+			maxWidth: 320,
+			minHeight: 220,
+			padding: '2rem 1.5rem',
+			border: `2px solid ${ACCENT1}22`,
+			cursor: 'pointer',
+			position: 'relative',
+			boxShadow: active === 0 ? `0 2px 16px ${ACCENT2}55` : undefined,
+			display: 'flex',
+			flexDirection: 'column',
+			alignItems: 'center',
+			touchAction: 'pan-y',
+		  }}
+		>
+		  <h3 style={{ color: ACCENT2, marginBottom: 8, textShadow: '0 1px 4px #0008' }}>{projects[active].title}</h3>
+		  <p style={{ color: '#BBBBBB', marginBottom: 16 }}>{projects[active].desc}</p>
+		  <a
+			href={projects[active].link}
+			target="_blank"
+			rel="noopener noreferrer"
+			style={{
+			  color: '#F1F1F1',
+			  background: ACCENT1,
+			  padding: '0.5rem 1.2rem',
+			  borderRadius: 24,
+			  textDecoration: 'none',
+			  fontWeight: 600,
+			  fontSize: '1rem',
+			  transition: 'background 0.2s, box-shadow 0.2s',
+			  marginTop: 'auto',
+			  boxShadow: '0 0 12px 0 #D732AA55',
+			}}
+			onMouseOver={e => e.currentTarget.style.background = '#E94CBF'}
+			onMouseOut={e => e.currentTarget.style.background = ACCENT1}
+		  >
+			View Project
+		  </a>
+		</motion.div>
+		{!isMobile && (
+		  <button
+			aria-label="Next"
+			onClick={() => goTo(active + 1)}
+			style={{
+			  background: 'none',
+			  border: 'none',
+			  fontSize: 32,
+			  color: ACCENT2,
+			  cursor: 'pointer',
+			  marginLeft: 8,
+			  opacity: 0.7,
+			}}
+		  >
+			›
+		  </button>
+		)}
+	  </div>
 			<div style={{ marginTop: 16, display: 'flex', gap: 8 }}>
 				{projects.map((_, i) => (
 					<span
@@ -323,18 +339,18 @@ function ProjectsSection() {
 function ContactSection() {
   return (
 	<section
-		id="contact"
-		style={{
+	  id="contact"
+	  style={{
 		width: '100vw',
 		height: '100vh',
-		background: '#fff',
+		background: '#111216',
 		display: 'flex',
 		flexDirection: 'column',
 		alignItems: 'center',
 		justifyContent: 'center',
 		position: 'relative',
 		overflow: 'hidden',
-		}}
+	  }}
 	>
 			{/* Floating background elements */}
 			<motion.div
@@ -368,40 +384,42 @@ function ContactSection() {
 				transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut' }}
 			/>
 			<div style={{ position: 'relative', zIndex: 1, textAlign: 'center', width: '100%' }}>
-				<h2 style={{ color: ACCENT2, fontSize: '2rem', marginBottom: 24 }}>Contact</h2>
-				<motion.a
-					href="mailto:maballesteros@protonmail.com"
-					target="_blank"
-					rel="noopener noreferrer"
-					initial={{ scale: 1 }}
-					whileHover={{ scale: 1.1, boxShadow: `0 0 24px ${ACCENT2}88` }}
-					style={{
-						display: 'inline-block',
-						padding: '1rem 2.5rem',
-						fontSize: '1.2rem',
-						borderRadius: 32,
-						border: 'none',
-						background: ACCENT1,
-						color: '#fff',
-						fontWeight: 700,
-						cursor: 'pointer',
-						marginBottom: 24,
-						boxShadow: `0 2px 16px ${ACCENT1}22`,
-						transition: 'background 0.2s',
-						textDecoration: 'none',
-					}}
-				>
-					Say Hello
-				</motion.a>
-				<div style={{ marginTop: 16, display: 'flex', justifyContent: 'center', gap: 24 }}>
-					<a href="mailto:maballesteros@protonmail.com" target="_blank" rel="noopener noreferrer" style={{ color: ACCENT1, fontSize: 28 }}>
-						📧
-					</a>
-					<a href="https://linkedin.com/in/marioflwrs" target="_blank" rel="noopener noreferrer" style={{ color: ACCENT2, fontSize: 28 }}>
-						in
-					</a>
-					{/* Optional: Add a contact form here */}
-				</div>
+		<h2 style={{ color: ACCENT2, fontSize: '2rem', marginBottom: 24, textShadow: '0 2px 8px #0008' }}>Contact</h2>
+		<motion.a
+		  href="mailto:maballesteros@protonmail.com"
+		  target="_blank"
+		  rel="noopener noreferrer"
+		  initial={{ scale: 1 }}
+		  whileHover={{ scale: 1.1, boxShadow: `0 0 24px ${ACCENT2}88` }}
+		  style={{
+			display: 'inline-block',
+			padding: '1rem 2.5rem',
+			fontSize: '1.2rem',
+			borderRadius: 32,
+			border: 'none',
+			background: ACCENT1,
+			color: '#F1F1F1',
+			fontWeight: 700,
+			cursor: 'pointer',
+			marginBottom: 24,
+			boxShadow: `0 2px 16px ${ACCENT1}55`,
+			transition: 'background 0.2s, box-shadow 0.2s',
+			textDecoration: 'none',
+		  }}
+		  onMouseOver={e => e.currentTarget.style.background = '#E94CBF'}
+		  onMouseOut={e => e.currentTarget.style.background = ACCENT1}
+		>
+		  Say Hello
+		</motion.a>
+		<div style={{ marginTop: 16, display: 'flex', justifyContent: 'center', gap: 24 }}>
+		  <a href="mailto:maballesteros@protonmail.com" target="_blank" rel="noopener noreferrer" style={{ color: ACCENT1, fontSize: 28, textShadow: '0 1px 4px #0008' }}>
+			📧
+		  </a>
+		  <a href="https://linkedin.com/in/marioflwrs" target="_blank" rel="noopener noreferrer" style={{ color: ACCENT2, fontSize: 28, textShadow: '0 1px 4px #0008' }}>
+			in
+		  </a>
+		  {/* Optional: Add a contact form here */}
+		</div>
 			</div>
 		</section>
 	)
