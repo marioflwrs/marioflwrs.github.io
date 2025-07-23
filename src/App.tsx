@@ -3,7 +3,7 @@ import './App.css'
 import { useRef, useState, useEffect } from 'react'
 import type { TouchEvent } from 'react'
 import { motion } from 'framer-motion'
-import { FaArrowsAltV, FaSun, FaMoon, FaArrowUp, FaArrowDown } from 'react-icons/fa'
+import { FaArrowsAltV, FaSun, FaMoon, FaArrowUp, FaArrowDown, FaCloud } from 'react-icons/fa'
 import { MdSwipeVertical } from 'react-icons/md'
 
 const ACCENT1 = '#D732AA'
@@ -46,7 +46,22 @@ function ThemeToggle({ darkMode, setDarkMode }: { darkMode: boolean, setDarkMode
 			transition={{ type: 'spring', stiffness: 300, damping: 30 }}
 			style={{ position: 'absolute', left: 0, right: 0, textAlign: 'center', width: '100%' }}
 		  >
-			<FaMoon style={{ fontSize: 28, color: '#FFD600', filter: 'drop-shadow(0 0 4px #FFD60088)' }} />
+			<span style={{ position: 'relative', display: 'inline-block', width: 44, height: 34 }}>
+			  {/* Purple sky */}
+			  <span style={{
+				position: 'absolute',
+				left: 0, top: 0,
+				width: 44, height: 44,
+				borderRadius: '50%',
+				background: 'linear-gradient(135deg, #6a4cff 60%, #b47cff 100%)',
+				zIndex: 1,
+			  }} />
+			  {/* Grey clouds */}
+			  <FaCloud style={{ position: 'absolute', left: 17, top: 10, fontSize: 18, color: '#bbb', opacity: 0.85, zIndex: 2 }} />
+			  <FaCloud style={{ position: 'absolute', left: 10, top: 18, fontSize: 14, color: '#888', opacity: 0.9, zIndex: 4 }} />
+			  {/* Moon */}
+			  <FaMoon style={{ position: 'absolute', left: 10, top: 8, fontSize: 24, color: '#FFD600', filter: 'drop-shadow(0 0 4px #FFD60088)', zIndex: 3 }} />
+			</span>
 		  </motion.span>
 		) : (
 		  <motion.span
@@ -57,7 +72,22 @@ function ThemeToggle({ darkMode, setDarkMode }: { darkMode: boolean, setDarkMode
 			transition={{ type: 'spring', stiffness: 300, damping: 30 }}
 			style={{ position: 'absolute', left: 0, right: 0, textAlign: 'center', width: '100%' }}
 		  >
-			<FaSun style={{ fontSize: 28, color: '#FFD600', filter: 'drop-shadow(0 0 4px #FFD60088)' }} />
+			<span style={{ position: 'relative', display: 'inline-block', width: 44, height: 34 }}>
+			  {/* Blue sky */}
+			  <span style={{
+				position: 'absolute',
+				left: 0, top: 0,
+				width: 44, height: 44,
+				borderRadius: '50%',
+				background: 'linear-gradient(135deg, #0422A8 0%, #58CFFB 100%)',
+				zIndex: 1,
+			  }} />
+			  {/* White clouds */}
+			  <FaCloud style={{ position: 'absolute', left: 19, top: 21, fontSize: 18, color: '#fff', opacity: 0.9, zIndex: 3 }} />
+			  <FaCloud style={{ position: 'absolute', left: 5, top: 21, fontSize: 14, color: '#e0e0e0', opacity: 0.7, zIndex: 3 }} />
+			  {/* Sun */}
+			  <FaSun style={{ position: 'absolute', left: 10, top: 8, fontSize: 24, color: '#FFD600', filter: 'drop-shadow(0 0 4px #FFD60088)', zIndex: 2 }} />
+			</span>
 		  </motion.span>
 		)}
 	  </AnimatePresence>
