@@ -38,6 +38,7 @@ const ProjectsSection: React.FC = () => {
   useEffect(() => {
     if (!isMobile || !ref.current) return;
     let startX: number | null = null;
+    // Use the global TouchEvent type (no import needed)
     const handleTouchStart = (e: TouchEvent) => {
       startX = e.touches[0].clientX;
     };
