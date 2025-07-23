@@ -1,9 +1,35 @@
+
 import './App.css'
 import { useRef, useState, useEffect } from 'react'
 import type { TouchEvent } from 'react'
 import { motion } from 'framer-motion'
 
 const ACCENT1 = '#D732AA'
+const ACCENT2 = '#FF3C1A'
+// Theme toggle button
+function ThemeToggle({ darkMode, setDarkMode }: { darkMode: boolean, setDarkMode: (v: boolean) => void }) {
+  return (
+	<button
+	  className="theme-toggle"
+	  aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+	  onClick={() => setDarkMode(!darkMode)}
+	  style={{
+		position: 'absolute',
+		top: 18,
+		right: 24,
+		zIndex: 100,
+		background: 'none',
+		border: 'none',
+		fontSize: 32,
+		cursor: 'pointer',
+		color: darkMode ? '#FFD600' : '#222',
+		transition: 'color 0.2s',
+	  }}
+	>
+	  {darkMode ? '🌙' : '☀️'}
+	</button>
+  )
+}
 
 const projects = [
 	{
@@ -241,7 +267,19 @@ const sections = [
 
 function App() {
   const [sectionIdx, setSectionIdx] = useState(0)
+  const [darkMode, setDarkMode] = useState(() => {
+	// Prefer system dark mode on first load
+	if (typeof window !== 'undefined' && window.matchMedia) {
+	  return window.matchMedia('(prefers-color-scheme: dark)').matches
+	}
+	return false
+  })
   const touchStartY = useRef<number | null>(null)
+
+  // Apply dark mode class to body
+  useEffect(() => {
+	document.body.classList.toggle('dark', darkMode)
+  }, [darkMode])
 
   // Handle wheel (desktop)
   useEffect(() => {
@@ -273,11 +311,12 @@ function App() {
 
   return (
 	<div
-		style={{ width: '100vw', height: '100vh', overflow: 'hidden', position: 'relative' }}
-		onTouchStart={onTouchStart}
-		onTouchEnd={onTouchEnd}
+	  style={{ width: '100vw', height: '100vh', overflow: 'hidden', position: 'relative' }}
+	  onTouchStart={onTouchStart}
+	  onTouchEnd={onTouchEnd}
 	>
-		<motion.div
+	  <ThemeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
+	  <motion.div
 		key={sectionIdx}
 		initial={{ y: 60, opacity: 0 }}
 		animate={{ y: 0, opacity: 1 }}
@@ -296,7 +335,7 @@ function App() {
 			  width: 10,
 			  height: 10,
 			  borderRadius: '50%',
-			  background: i === sectionIdx ? ACCENT1 : '#ddd',
+			  background: i === sectionIdx ? (darkMode ? ACCENT1 : ACCENT2) : '#ddd',
 			  display: 'inline-block',
 			  margin: 2,
 			  transition: 'background 0.2s',
