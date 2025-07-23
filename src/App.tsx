@@ -136,8 +136,9 @@ function HeroSection() {
 			letterSpacing: '-1px',
 			lineHeight: 1.2,
 			margin: '0 auto',
-			width: isMobile ? '60%' : '70%',
-			whiteSpace: 'nowrap',
+			width: 'auto',
+			minWidth: 'fit-content',
+			maxWidth: 500,
 			background: '#1A1C22',
 			borderRadius: 10,
 			padding: isMobile ? '0.7rem 0.7rem' : '1.2rem 2rem',
@@ -146,9 +147,8 @@ function HeroSection() {
 			borderBottom: `2px solid ${ACCENT1}`,
 			position: 'relative',
 			overflow: 'hidden',
-			minWidth: 0,
-			maxWidth: 500,
 			display: 'block',
+			// Removed whiteSpace: 'nowrap' to allow wrapping
 		  }}
 		>
 		  {displayed}
