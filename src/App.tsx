@@ -73,10 +73,10 @@ function App() {
   }, [])
 
   // Handle swipe (mobile)
-  const onTouchStart = (e: TouchEvent) => {
+  const onTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
 	touchStartY.current = e.touches[0].clientY
   }
-  const onTouchEnd = (e: TouchEvent) => {
+  const onTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
 	if (touchStartY.current === null) return
 	const deltaY = e.changedTouches[0].clientY - touchStartY.current
 	if (deltaY < -50) {
