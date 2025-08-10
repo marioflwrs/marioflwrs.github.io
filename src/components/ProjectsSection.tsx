@@ -1,11 +1,13 @@
+
 import React, { useRef, useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import CryptoDashboard from './CryptoDashboard';
 
 const projects = [
   {
-    title: 'Portfolio',
-    desc: 'Personal site built with React + Vite.',
+    title: 'digiscope',
+    desc: 'A responsive dashboard for tracking real-time crypto asset data and related market news. Built with React, TypeScript, and Framer Motion.',
     link: 'https://github.com/marioflwrs/portfolio',
   },
   {
@@ -20,16 +22,28 @@ const projects = [
   },
 ];
 
+// ...existing code...
 const ProjectsSection: React.FC = () => {
   const ref = useRef<HTMLDivElement | null>(null);
   const [active, setActive] = useState(0);
   const [dotSpin, setDotSpin] = useState<'spin-right' | 'spin-left' | ''>('');
+  const [showOverlay, setShowOverlay] = useState(false);
+  const [circlePos, setCirclePos] = useState({ x: 0, y: 0 });
 
   const goTo = (idx: number) => {
     const direction = idx > active ? 'spin-right' : 'spin-left';
     setDotSpin(direction);
     setActive((idx + projects.length) % projects.length);
-    setTimeout(() => setDotSpin(''), 300); // Remove spin class after animation
+    setTimeout(() => setDotSpin(''), 300);
+  };
+
+  const handleViewProject = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setCirclePos({
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+    });
+    setShowOverlay(true);
   };
 
   const [isMobile, setIsMobile] = useState(false);
@@ -40,11 +54,9 @@ const ProjectsSection: React.FC = () => {
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  // Swipe handling for mobile
   useEffect(() => {
     if (!isMobile || !ref.current) return;
     let startX: number | null = null;
-    // Use the global TouchEvent type (no import needed)
     const handleTouchStart = (e: TouchEvent) => {
       startX = e.touches[0].clientX;
     };
@@ -89,11 +101,28 @@ const ProjectsSection: React.FC = () => {
           }}
           className={active === 0 ? 'project-card active' : 'project-card'}
         >
-          <h3>{projects[active].title}</h3>
-          <p>{projects[active].desc}</p>
-          <a href={projects[active].link} target="_blank" rel="noopener noreferrer" className="project-link">
-            View Project
-          </a>
+          <>
+            <h3 className="project-title">{projects[active].title}</h3>
+            <p className="project-desc">{projects[active].desc}</p>
+            {projects[active].title === 'digiscope' ? (
+              <button
+                className="project-link"
+                onClick={handleViewProject}
+                style={{ position: 'relative', zIndex: 2 }}
+              >
+                View Project
+              </button>
+            ) : (
+              <a
+                href={projects[active].link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="project-link"
+              >
+                View Project
+              </a>
+            )}
+          </>
         </motion.div>
         {!isMobile && (
           <button className="carousel-arrow right" onClick={() => goTo(active + 1)} aria-label="Next project">
@@ -111,9 +140,50 @@ const ProjectsSection: React.FC = () => {
               (i === active ? ' active' : '') +
               (i === active && dotSpin ? ` ${dotSpin}` : '')
             }
-          />
+          ></span>
         ))}
       </div>
+      <AnimatePresence>
+        {showOverlay && (
+          <motion.div
+            className="fullscreen-overlay"
+            initial={{
+              clipPath: `circle(0px at ${circlePos.x}px ${circlePos.y}px)`,
+              background: 'rgba(30,30,30,0.95)',
+            }}
+            animate={{
+              clipPath: `circle(150vw at ${circlePos.x}px ${circlePos.y}px)`,
+              background: 'rgba(30,30,30,0.98)',
+              transition: { duration: 0.7, ease: [0.4, 0, 0.2, 1] },
+            }}
+            exit={{
+              clipPath: `circle(0px at ${circlePos.x}px ${circlePos.y}px)`,
+              background: 'rgba(30,30,30,0.95)',
+              transition: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
+            }}
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              zIndex: 1000,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <CryptoDashboard />
+            <button
+              className="close-overlay-btn"
+              onClick={() => setShowOverlay(false)}
+              aria-label="Close"
+            >
+              ×
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

@@ -12,6 +12,7 @@ import ThemeToggle from './components/ThemeToggle';
 import HeroSection from './components/HeroSection';
 import ProjectsSection from './components/ProjectsSection';
 import ContactSection from './components/ContactSection';
+//import CryptoDashboard from './components/CryptoDashboard';
 
 const ACCENT1 = '#D732AA';
 const ACCENT2 = '#FF3C1A';

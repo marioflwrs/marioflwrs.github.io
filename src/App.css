@@ -352,6 +352,27 @@ body.dark .subline, .dark .subline {
 .contact-icon.linkedin {
   color: var(--accent2);
 }
+
+.close-overlay-btn {
+  position: absolute;
+  top: 24px;
+  right: 32px;
+  font-size: 2rem;
+  background: none;
+  border: none;
+  color: #222;
+  cursor: pointer;
+  z-index: 1001;
+  transition: color 0.2s, transform 0.2s;
+  padding: 0 8px;
+  line-height: 1;
+}
+
+body.dark .close-overlay-btn,
+.dark .close-overlay-btn {
+  color: #fff;
+}
+
 #root, html, body {
   width: 100vw;
   height: 100vh;

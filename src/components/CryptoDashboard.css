@@ -1,0 +1,126 @@
+/* CryptoDashboard styles - matches fullscreen card layout */
+.crypto-dashboard {
+  width: 100vw;
+  min-height: 100vh;
+  background: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 48px 0 0 0;
+  box-sizing: border-box;
+}
+.crypto-title {
+  color: var(--accent1);
+  font-size: 2rem;
+  margin-bottom: 32px;
+  text-shadow: 0 4px 12px var(--accent1), 0 2px 4px var(--accent1)cc;
+  text-align: center;
+}
+.crypto-status {
+  color: var(--color-muted);
+  font-size: 1.2rem;
+  margin-bottom: 24px;
+  text-align: center;
+}
+.crypto-status.error {
+  color: #e74c3c;
+}
+.crypto-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  justify-content: center;
+  width: 100vw;
+  max-width: 1200px;
+}
+.crypto-card {
+  background: var(--color-bg-card);
+  border-radius: 18px;
+  box-shadow: 0 2px 16px var(--accent1)22, 0 0 40px 8px var(--accent1)11;
+  border: 2px solid var(--accent1);
+  min-width: 220px;
+  max-width: 260px;
+  min-height: 180px;
+  padding: 1.5rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: box-shadow 0.2s, transform 0.2s;
+  color: var(--color-text);
+  position: relative;
+}
+.crypto-card:hover {
+  box-shadow: 0 4px 32px var(--accent2)33;
+  transform: translateY(-4px) scale(1.03);
+}
+.crypto-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin-bottom: 12px;
+  background: #fff;
+  border: 2px solid var(--accent2);
+  object-fit: contain;
+}
+.crypto-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  text-align: center;
+}
+.crypto-symbol {
+  color: var(--color-muted);
+  font-size: 0.95em;
+  font-weight: 400;
+}
+.crypto-price {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--color-text);
+}
+.crypto-change {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 2px;
+  text-align: center;
+  transition: color 0.2s;
+}
+.crypto-change.positive {
+  color: #1db954;
+}
+.crypto-change.negative {
+  color: #e74c3c;
+}
+@media (max-width: 900px) {
+  .crypto-cards {
+    gap: 18px;
+  }
+  .crypto-card {
+    min-width: 160px;
+    max-width: 200px;
+    padding: 1.1rem 0.7rem;
+  }
+}
+@media (max-width: 600px) {
+  .crypto-dashboard {
+    padding: 24px 0 0 0;
+  }
+  .crypto-title {
+    font-size: 1.2rem;
+    margin-bottom: 18px;
+  }
+  .crypto-cards {
+    gap: 10px;
+  }
+  .crypto-card {
+    min-width: 120px;
+    max-width: 140px;
+    padding: 0.7rem 0.3rem;
+  }
+  .crypto-logo {
+    width: 32px;
+    height: 32px;
+  }
+}
