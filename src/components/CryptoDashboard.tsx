@@ -48,7 +48,7 @@ const CryptoDashboard: React.FC = () => {
       {loading && <div className="crypto-status">Loading...</div>}
       {error && <div className="crypto-status error">{error}</div>}
       <div className="crypto-cards">
-        {coins.map((coin, i) => (
+  {coins.map((coin) => (
           <motion.div
             className="crypto-card"
             key={coin.id}
