@@ -9,6 +9,10 @@ interface Coin {
   current_price: number;
   price_change_percentage_24h: number;
   symbol: string;
+  market_cap: number;
+  total_volume: number;
+  high_24h: number;
+  low_24h: number;
 }
 
 const API_URL =
@@ -18,6 +22,7 @@ const CryptoDashboard: React.FC = () => {
   const [coins, setCoins] = useState<Coin[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [flipped, setFlipped] = useState<string | null>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -47,31 +52,48 @@ const CryptoDashboard: React.FC = () => {
           <motion.div
             className="crypto-card"
             key={coin.id}
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.08, duration: 0.5 }}
+            onClick={() => setFlipped(flipped === coin.id ? null : coin.id)}
+            style={{ perspective: 1000, cursor: 'pointer' }}
           >
-            <img src={coin.image} alt={coin.name} className="crypto-logo" />
-            <div className="crypto-name">{coin.name} <span className="crypto-symbol">({coin.symbol.toUpperCase()})</span></div>
-            <div className="crypto-price">${coin.current_price.toLocaleString()}</div>
-            <div
-              className={
-                'crypto-change ' +
-                (coin.price_change_percentage_24h > 0
-                  ? 'positive'
-                  : coin.price_change_percentage_24h < 0
-                  ? 'negative'
-                  : '')
-              }
+            <motion.div
+              className="crypto-card-inner"
+              animate={{ rotateY: flipped === coin.id ? 180 : 0 }}
+              transition={{ duration: 0.6 }}
+              style={{ position: 'relative', width: '100%', height: '100%' }}
             >
-              {coin.price_change_percentage_24h > 0 ? '+' : ''}
-              {coin.price_change_percentage_24h.toFixed(2)}%
-            </div>
+              {/* Front Side */}
+              <div className="crypto-card-front">
+                <img src={coin.image} alt={coin.name} className="crypto-logo" />
+                <div className="crypto-name">
+                  {coin.name} <span className="crypto-symbol">({coin.symbol.toUpperCase()})</span>
+                </div>
+                <div className="crypto-price">${coin.current_price.toLocaleString()}</div>
+              </div>
+              {/* Back Side */}
+              <div className="crypto-card-back">
+                <div
+                  className={
+                    'crypto-change ' +
+                    (coin.price_change_percentage_24h > 0
+                      ? 'positive'
+                      : coin.price_change_percentage_24h < 0
+                      ? 'negative'
+                      : '')
+                  }
+                >
+                  {coin.price_change_percentage_24h > 0 ? '+' : ''}
+                  {coin.price_change_percentage_24h.toFixed(2)}%
+                </div>
+                <div><b>Market Cap:</b> ${coin.market_cap.toLocaleString()}</div>
+                <div><b>24h Volume:</b> ${coin.total_volume.toLocaleString()}</div>
+                <div><b>24h High:</b> ${coin.high_24h.toLocaleString()}</div>
+                <div><b>24h Low:</b> ${coin.low_24h.toLocaleString()}</div>
+              </div>
+            </motion.div>
           </motion.div>
         ))}
       </div>
     </section>
   );
 };
-
 export default CryptoDashboard;
