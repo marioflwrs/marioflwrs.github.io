@@ -1,5 +1,6 @@
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useContext } from 'react';
+import { OverlayContext } from '../App';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import CryptoDashboard from './CryptoDashboard';
@@ -28,6 +29,7 @@ const ProjectsSection: React.FC = () => {
   const [active, setActive] = useState(0);
   const [dotSpin, setDotSpin] = useState<'spin-right' | 'spin-left' | ''>('');
   const [showOverlay, setShowOverlay] = useState(false);
+  const { setOverlayActive } = useContext(OverlayContext);
   const [circlePos, setCirclePos] = useState({ x: 0, y: 0 });
 
   const goTo = (idx: number) => {
@@ -44,6 +46,7 @@ const ProjectsSection: React.FC = () => {
       y: rect.top + rect.height / 2,
     });
     setShowOverlay(true);
+    setOverlayActive(true);
   };
 
   const [isMobile, setIsMobile] = useState(false);
@@ -75,6 +78,11 @@ const ProjectsSection: React.FC = () => {
       node.removeEventListener('touchend', handleTouchEnd);
     };
   }, [isMobile, active]);
+
+  // When overlay closes, reset overlayActive
+  useEffect(() => {
+    if (!showOverlay) setOverlayActive(false);
+  }, [showOverlay, setOverlayActive]);
 
   return (
     <section ref={ref} id="projects" className="projects-section">

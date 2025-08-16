@@ -1,3 +1,27 @@
+/* Load More button row */
+.crypto-load-more-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+.crypto-load-more-btn {
+  padding: 0.7rem 2.2rem;
+  border-radius: 24px;
+  background: var(--accent1);
+  color: var(--color-text);
+  font-weight: 600;
+  font-size: 1.1rem;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 16px var(--accent1)55;
+  transition: background 0.2s, box-shadow 0.2s;
+  margin: 0 auto;
+  outline: none;
+}
+.crypto-load-more-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 /* CryptoDashboard styles - matches fullscreen card layout */
 .crypto-dashboard {
   width: 100vw;
@@ -34,14 +58,14 @@
   width: 100vw;
   max-width: 1200px;
 }
+/* Force fixed size for cards */
 .crypto-card {
   background: var(--color-bg-card);
   border-radius: 18px;
   box-shadow: 0 2px 16px var(--accent1)22, 0 0 40px 8px var(--accent1)11;
   border: 2px solid var(--accent1);
-  min-width: 220px;
-  max-width: 260px;
-  min-height: 180px;
+  width: 260px;
+  height: 220px;
   padding: 1.5rem 1.2rem;
   display: flex;
   flex-direction: column;
@@ -54,37 +78,53 @@
   box-shadow: 0 4px 32px var(--accent2)33;
   transform: translateY(-4px) scale(1.03);
 }
+/* Card header row: image, name, price horizontally */
+.crypto-card-header-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 8px;
+}
 .crypto-logo {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  margin-bottom: 12px;
   background: #fff;
   border: 2px solid var(--accent2);
   object-fit: contain;
+  margin-bottom: 0;
+}
+.crypto-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 .crypto-name {
   font-size: 1.1rem;
   font-weight: 600;
-  margin-bottom: 4px;
-  text-align: center;
+  text-align: left;
+  margin-bottom: 0;
 }
 .crypto-symbol {
   color: var(--color-muted);
   font-size: 0.95em;
   font-weight: 400;
 }
+/* Price and percentage row */
+.crypto-price-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
 .crypto-price {
   font-size: 1.3rem;
   font-weight: 700;
-  margin-bottom: 6px;
   color: var(--color-text);
 }
 .crypto-change {
   font-size: 1.1rem;
   font-weight: 600;
-  margin-top: 2px;
-  text-align: center;
   transition: color 0.2s;
 }
 .crypto-change.positive {
