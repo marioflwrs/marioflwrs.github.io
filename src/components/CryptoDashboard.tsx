@@ -15,19 +15,21 @@ interface Coin {
   low_24h: number;
 }
 
-const API_URL =
-  'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false';
+const BASE_API_URL =
+  'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&sparkline=false';
 
 const CryptoDashboard: React.FC = () => {
   const [coins, setCoins] = useState<Coin[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [flipped, setFlipped] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
 
   useEffect(() => {
     setLoading(true);
     setError(null);
-    fetch(API_URL)
+    fetch(`${BASE_API_URL}&per_page=${perPage}&page=1`)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch data');
         return res.json();
@@ -40,7 +42,7 @@ const CryptoDashboard: React.FC = () => {
         setError(err.message);
         setLoading(false);
       });
-  }, []);
+  }, [perPage]);
 
   return (
     <section className="crypto-dashboard">
@@ -48,7 +50,7 @@ const CryptoDashboard: React.FC = () => {
       {loading && <div className="crypto-status">Loading...</div>}
       {error && <div className="crypto-status error">{error}</div>}
       <div className="crypto-cards">
-  {coins.map((coin) => (
+        {coins.map((coin) => (
           <motion.div
             className="crypto-card"
             key={coin.id}
@@ -92,6 +94,28 @@ const CryptoDashboard: React.FC = () => {
             </motion.div>
           </motion.div>
         ))}
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
+        <button
+          className="crypto-load-more-btn"
+          onClick={() => setPerPage(perPage + 10)}
+          disabled={loading}
+          style={{
+            padding: '0.7rem 2.2rem',
+            borderRadius: '24px',
+            background: 'var(--accent1)',
+            color: 'var(--color-text)',
+            fontWeight: 600,
+            fontSize: '1.1rem',
+            border: 'none',
+            cursor: 'pointer',
+            boxShadow: '0 2px 16px var(--accent1)55',
+            transition: 'background 0.2s, box-shadow 0.2s',
+            margin: '0 auto',
+          }}
+        >
+          {loading ? 'Loading...' : 'Load More'}
+        </button>
       </div>
     </section>
   );
