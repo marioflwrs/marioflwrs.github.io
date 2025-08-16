@@ -23,7 +23,6 @@ const CryptoDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   // Removed card flipping logic
-  const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
 
   useEffect(() => {
