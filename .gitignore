@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Second brain / agentic context folder (local only, never committed)
+.agent

@@ -1,0 +1,306 @@
+/* The fixed 3D backdrop. */
+.skylands-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  z-index: 0;
+}
+
+/* Scrollable content above the canvas. */
+.overlay {
+  position: relative;
+  z-index: 1;
+}
+
+.section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: clamp(1.5rem, 5vw, 6rem);
+}
+
+.section--left {
+  justify-content: flex-start;
+}
+.section--right {
+  justify-content: flex-end;
+}
+.section--center {
+  justify-content: center;
+  text-align: center;
+}
+
+/* Glass content cards. */
+.panel {
+  max-width: 32rem;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  border-radius: 1.25rem;
+  background: rgba(18, 14, 30, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  color: #f5f0ff;
+
+  /* Panel reveal — hidden until its section scrolls into view (see .is-visible rule below). */
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.7s ease 0.15s,
+    transform 0.7s ease 0.15s;
+}
+
+.panel--hero,
+.panel--contact {
+  max-width: 38rem;
+}
+.panel--wide {
+  max-width: 44rem;
+}
+
+.section.is-visible .panel {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.eyebrow {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #ffb9e6;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(2.5rem, 7vw, 4.5rem);
+  line-height: 1.05;
+  font-weight: 800;
+}
+
+.heading {
+  margin: 0 0 1rem;
+  font-size: clamp(1.8rem, 4vw, 2.75rem);
+  line-height: 1.1;
+}
+
+.subtitle {
+  margin: 1rem 0 1.5rem;
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  color: #d9d2ec;
+}
+
+.body {
+  margin: 0 0 1rem;
+  line-height: 1.65;
+  color: #ded7f0;
+}
+
+.cta {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  background: linear-gradient(120deg, #ff7ac6, #ffb066);
+  color: #1a1024;
+  font-weight: 700;
+}
+
+/* Projects. */
+.project-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.project-card {
+  padding: 1.25rem;
+  border-radius: 0.9rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition:
+    border-color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.project-card.is-focused {
+  border-color: #ffb066;
+  transform: translateY(-2px);
+}
+
+.project-title {
+  margin: 0 0 0.4rem;
+  font-size: 1.2rem;
+}
+
+.project-blurb {
+  margin: 0 0 0.75rem;
+  line-height: 1.55;
+  color: #d6cfea;
+}
+
+.tag-row {
+  list-style: none;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tag {
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #f0e9ff;
+}
+
+.project-link {
+  font-weight: 600;
+  color: #ffb9e6;
+}
+
+/* Contact links. */
+.link-row {
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  font-weight: 600;
+}
+
+/* Slim scroll-progress indicator. */
+.progress-track {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 4;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.progress-bar {
+  height: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: linear-gradient(90deg, #ffb066, #ffb9e6);
+  will-change: transform;
+}
+
+/* Dot navigation. */
+.dot-nav {
+  position: fixed;
+  top: 50%;
+  right: clamp(0.75rem, 2vw, 1.75rem);
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
+.dot-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.dot {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  justify-content: flex-end;
+  width: 100%;
+  margin: 0;
+  padding: 0.15rem 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.dot::after {
+  content: '';
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  background: transparent;
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.dot.is-active::after {
+  background: #ffb066;
+  border-color: #ffb066;
+  transform: scale(1.25);
+}
+
+.dot-label {
+  font-size: 0.75rem;
+  color: #f0e9ff;
+  opacity: 0;
+  transform: translateX(6px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+.dot:hover .dot-label,
+.dot.is-active .dot-label {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Skip link for keyboard users. */
+.skip-link {
+  position: fixed;
+  top: -3rem;
+  left: 1rem;
+  z-index: 5;
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
+  background: #1a1024;
+  color: #fff;
+  transition: top 0.2s ease;
+}
+.skip-link:focus {
+  top: 1rem;
+}
+
+@media (max-width: 640px) {
+  .dot-label {
+    display: none;
+  }
+  .section--left,
+  .section--right {
+    justify-content: center;
+  }
+}
+
+/* Respect reduced-motion: reveal instantly, drop transitions. */
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .progress-bar,
+  .project-card,
+  .dot::after,
+  .dot-label {
+    transition: none;
+  }
+}
