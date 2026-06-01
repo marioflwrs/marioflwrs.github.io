@@ -5,26 +5,27 @@ export interface Project {
   href?: string;
 }
 
-// Placeholder projects — swap in real work later. Order matches the project islets in
-// the 3D archipelago (Islands.buildArchipelago), so a click on islet i focuses
-// projects[i].
+// Order matches the project islets in the 3D archipelago (Islands.buildArchipelago),
+// so a click on islet i focuses projects[i].
 export const PROJECTS: Project[] = [
   {
-    title: 'Project One',
-    blurb: 'A short placeholder description of a thing I built. Replace with the real story, the problem it solved, and what made it interesting.',
-    tags: ['TypeScript', 'WebGL', 'UX'],
-    href: '#',
+    title: 'Cypherbreak',
+    blurb:
+      'A complex, full-stack application architected using advanced AI-agent developer workflows. Built with an enterprise-grade security perimeter — rate limiting, strict input validation, and a hardened controls layer — to demonstrate that great products are defined not just by what they do, but by how they are restricted.',
+    tags: ['Full-Stack', 'Security', 'AI Agents', 'Systems Design'],
+    href: 'https://cypherbreak.com',
   },
   {
-    title: 'Project Two',
-    blurb: 'Another placeholder. Drop in a sentence or two about the stack, your role, and the outcome or impact.',
-    tags: ['React', 'Node', 'API'],
-    href: '#',
+    title: 'Skylands',
+    blurb:
+      'This portfolio — a scroll-driven 3D experience built on a modular Three.js engine with a React overlay. Engineered in distinct layers: a real-time WebGL scene (world entities, camera path system, picking), a React UI layer, and a CI/CD pipeline on GitHub Actions that deploys to zero-downtime Pages on every push.',
+    tags: ['Three.js', 'React', 'TypeScript', 'WebGL'],
+    href: 'https://github.com/marioflwrs/marioflwrs.github.io',
   },
   {
-    title: 'Project Three',
-    blurb: 'One more placeholder card. Keep these concise and let the visuals do the talking.',
-    tags: ['Three.js', 'Design', 'Performance'],
-    href: '#',
+    title: 'Discord Active Agent Trigger',
+    blurb:
+      'A lightweight automation pipeline that bridges Discord and a local AI workspace. It monitors a private channel, harvests image attachments and text, downloads them locally, packages everything into a structured JSON payload, then exits — using its own shutdown as a signal to wake downstream agents and begin processing the dropped task.',
+    tags: ['Node.js', 'Discord API', 'Automation', 'AI Tooling'],
   },
 ];

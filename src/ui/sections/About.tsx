@@ -4,16 +4,18 @@ export default function About() {
       <div className="panel">
         <p className="eyebrow">About</p>
         <h2 id="about-title" className="heading">
-          A cozy island of curiosity
+          Built for hard problems.
         </h2>
         <p className="body">
-          I&apos;m a developer who loves the intersection of code, motion, and design. I build
-          interfaces and experiences that feel alive — performant, accessible, and a little
-          playful.
+          I&apos;m a Full-Stack Product Engineer who cares about the intersection of code, motion,
+          and design. I build interfaces and experiences that feel alive — performant, accessible,
+          and engineered to last.
         </p>
         <p className="body">
-          Replace this with your real story: where you&apos;ve worked, what you care about, and the
-          kinds of problems you like to solve.
+          I approach every system through three lenses: what it does for users, how it&apos;s built
+          under the hood, and how it&apos;s restricted at the perimeter. That last layer — security,
+          validation, rate limiting, CI/CD — is where I think most engineers underinvest.
+          It&apos;s where I focus.
         </p>
       </div>
     </section>

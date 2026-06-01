@@ -12,7 +12,7 @@ export default function Contact() {
         </p>
         <ul className="link-row">
           <li>
-            <a href="mailto:hello@example.com">Email</a>
+            <a href="mailto:maballesteros@protonmail.com">Email</a>
           </li>
           <li>
             <a href="https://github.com/marioflwrs" target="_blank" rel="noreferrer">
@@ -20,7 +20,7 @@ export default function Contact() {
             </a>
           </li>
           <li>
-            <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer">
+            <a href="https://www.linkedin.com/in/marioballe/" target="_blank" rel="noreferrer">
               LinkedIn
             </a>
           </li>
