@@ -7,8 +7,7 @@ export default function Contact() {
           Let&apos;s build something
         </h2>
         <p className="body">
-          The sun&apos;s setting on the journey — but this is where it starts. Reach out and
-          let&apos;s talk.
+          The flight's ending here, but the real conversation is just starting. If you want to talk about building something solid, fixing hard problems, or just geeking out about architecture — let's connect.
         </p>
         <ul className="link-row">
           <li>

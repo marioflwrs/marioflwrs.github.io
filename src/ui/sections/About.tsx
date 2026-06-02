@@ -4,18 +4,13 @@ export default function About() {
       <div className="panel">
         <p className="eyebrow">About</p>
         <h2 id="about-title" className="heading">
-          Built for hard problems.
+          I solve problems that matter.
         </h2>
         <p className="body">
-          I&apos;m a Full-Stack Product Engineer who cares about the intersection of code, motion,
-          and design. I build interfaces and experiences that feel alive — performant, accessible,
-          and engineered to last.
+          I'm a full-stack engineer who thinks about the whole picture: what the user experiences, how the code holds up under pressure, and whether the system is actually secure.
         </p>
         <p className="body">
-          I approach every system through three lenses: what it does for users, how it&apos;s built
-          under the hood, and how it&apos;s restricted at the perimeter. That last layer — security,
-          validation, rate limiting, CI/CD — is where I think most engineers underinvest.
-          It&apos;s where I focus.
+          Most teams chase features and speed. I obsess over the parts you don't see — validation, rate limiting, resilience. That's where hard problems hide, and where I focus my energy.
         </p>
       </div>
     </section>
