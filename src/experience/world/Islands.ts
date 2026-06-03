@@ -17,11 +17,13 @@ const ISLAND_PALETTES: IslandPalette[] = [
   { grass: 0x6a8f5e, rock: 0x6a5a7a }, // contact   (dusk)        — muted sage / cool purple-grey
 ];
 
-// Per-island float data.
+// Per-island float + spin data.
 interface IslandData {
-  group: THREE.Group;
-  phase: number;
-  baseY: number; // anchor y — preserved so the animation offset adds to it rather than replacing it
+  group:     THREE.Group;
+  phase:     number;
+  baseY:     number;     // anchor y — preserved so the animation offset adds to it rather than replacing it
+  spinSpeed: number;     // Y-axis angular speed in rad/s
+  spinDir:   number;     // +1 or -1 (counter-clockwise / clockwise)
 }
 
 // Per-tree instance data for dynamic matrix updates.
@@ -67,6 +69,9 @@ export class Islands {
   // so islands always float (floating is intentional design, not distracting motion).
   private ownElapsed = 0;
 
+  // Scratch vector for rotating tree local offsets by the island's quaternion (zero per-frame allocation).
+  private readonly treeScratch = new THREE.Vector3();
+
   private trunkMesh!: THREE.InstancedMesh;
   private canopyMesh!: THREE.InstancedMesh;
 
@@ -88,7 +93,7 @@ export class Islands {
         const island = this.buildIsland(radius, index * 97 + 13, palette);
         island.position.copy(section.anchor);
         this.group.add(island);
-        this.islandData.push({ group: island, phase: Math.random() * Math.PI * 2, baseY: island.position.y });
+        this.islandData.push({ group: island, phase: Math.random() * Math.PI * 2, baseY: island.position.y, spinSpeed: 0.04 + Math.random() * 0.10, spinDir: Math.random() < 0.5 ? 1 : -1 });
         this.scatterTrees(island, radius, index * 53 + 7, treeSlots);
       }
     });
@@ -148,7 +153,7 @@ export class Islands {
       islet.userData.projectIndex = i;
       this.pickTargets.push(islet);
       this.group.add(islet);
-      this.islandData.push({ group: islet, phase: Math.random() * Math.PI * 2, baseY: islet.position.y });
+      this.islandData.push({ group: islet, phase: Math.random() * Math.PI * 2, baseY: islet.position.y, spinSpeed: 0.04 + Math.random() * 0.10, spinDir: Math.random() < 0.5 ? 1 : -1 });
       this.scatterTrees(islet, radius, sectionIndex * 311 + i * 19, treeSlots);
     }
   }
@@ -202,25 +207,27 @@ export class Islands {
     this.canopyMesh.instanceMatrix.needsUpdate = true;
   }
 
-  // Each island floats with its own phase. The own clock always advances so islands
-  // float regardless of the global reduced-motion preference (gentle bobbing is
-  // intentional design, not distracting motion). Tree instance matrices are rebuilt
-  // every frame so trees stay attached to their island surface.
+  // Each island floats with its own phase and spins at its own speed and direction. The own
+  // clock always advances so islands float regardless of the global reduced-motion preference
+  // (gentle bobbing and spinning is intentional design, not distracting motion). Tree instance
+  // matrices are rebuilt every frame so trees stay planted on their spinning island.
   update(dt: number, _elapsed: number, _motion: number): void {
     this.ownElapsed += dt;
 
     // Group-level bob — gentle global drift shared by all islands.
     this.group.position.y = Math.sin(this.ownElapsed * 0.45) * 0.30;
 
-    // Per-island independent float driven by each island's own phase offset.
-    for (const { group, phase, baseY } of this.islandData) {
-      group.position.y = baseY + Math.sin(this.ownElapsed * 0.62 + phase) * 0.35;
+    // Per-island independent float + unique spin direction and speed.
+    for (const { group, phase, baseY, spinSpeed, spinDir } of this.islandData) {
+      group.position.y   = baseY + Math.sin(this.ownElapsed * 0.62 + phase) * 0.35;
+      group.rotation.y  += spinDir * spinSpeed * dt;
     }
 
-    // Rebuild instance matrices so trees follow their island's current position.
+    // Rebuild instance matrices so trees follow their island's current position and rotation.
     for (const { islandGroup, localOffset, scale, instanceIndex } of this.treeInstances) {
-      this.treePos.copy(islandGroup.position).add(localOffset);
-      this.treeQuat.identity();
+      this.treeScratch.copy(localOffset).applyQuaternion(islandGroup.quaternion);
+      this.treePos.copy(islandGroup.position).add(this.treeScratch);
+      this.treeQuat.copy(islandGroup.quaternion);
       this.treeScale.setScalar(scale);
       this.treeMatrix.compose(this.treePos, this.treeQuat, this.treeScale);
       this.trunkMesh.setMatrixAt(instanceIndex, this.treeMatrix);

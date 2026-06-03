@@ -19,6 +19,20 @@ const GAZE_PANEL_DUR  = 2.0;                         // seconds spent "reading" 
 const GAZE_CAMERA_MIN = 4.0;                         // min seconds looking at camera
 const GAZE_CAMERA_MAX = 8.0;                         // max seconds looking at camera
 
+// Emotion constants.
+const PANEL_SQUINT     = 0.65;  // eye scale.y while "reading" — concentration expression
+const BREATH_SPEED     = 1.8;   // rad/s for scale oscillation
+const BREATH_AMPLITUDE = 0.030; // ±3 % scale — subtle heartbeat quality
+const POP_AMOUNT       = 1.16;  // scale burst magnitude when gaze returns to camera
+const POP_DECAY        = 6.0;   // per-second lerp rate toward 1.0 after pop
+const TILT_SPEED       = 0.70;  // rad/s for resting curiosity head-tilt
+const TILT_AMPLITUDE   = 0.06;  // ±3.4° gentle head tilt (rad)
+const WAGGLE_DURATION  = 1.0;   // s — total waggle animation
+const WAGGLE_AMPLITUDE = 0.22;  // rad (~12.6°) max Z rotation during waggle
+const WAGGLE_FREQUENCY = 5.5;   // oscillations per waggle
+const WAGGLE_MIN_IDLE  = 25.0;  // min seconds between waggles
+const WAGGLE_MAX_IDLE  = 45.0;  // max seconds between waggles
+
 type BlinkState = 'idle' | 'c1' | 'o1' | 'gap' | 'c2' | 'o2';
 type GazeState  = 'camera' | 'to_panel' | 'panel' | 'to_camera';
 
@@ -58,6 +72,18 @@ export class Companion {
   private readonly quatCamera  = new THREE.Quaternion();
   private readonly quatPanel   = new THREE.Quaternion();
   private readonly scratchObj  = new THREE.Object3D(); // NEVER added to scene
+
+  // Emotion state — all plain number fields; zero per-frame allocation.
+  private eyeBaseScaleY = 1.0;    // blink machine uses this as the "open" baseline
+  private popFactor     = 1.0;    // scale burst after gaze returns to camera; decays to 1
+  private waggleClock   = 0;
+  private waggleActive  = false;
+  private waggleTimer   = 0;
+  private nextWaggle    = WAGGLE_MIN_IDLE + Math.random() * (WAGGLE_MAX_IDLE - WAGGLE_MIN_IDLE);
+
+  // Zero-allocation scratch for emotion quaternion composition.
+  private readonly emotionEuler = new THREE.Euler();
+  private readonly emotionQuat  = new THREE.Quaternion();
 
   constructor() {
     const bodyGeo = new THREE.SphereGeometry(0.32, 24, 24);
@@ -137,8 +163,8 @@ export class Companion {
       case 'c1': {
         // Close both eyes: scale.y → EYE_CLOSE_SCALE, rotation.z → ±EYE_SQUINT_Z
         const a = alpha(BLINK_CLOSE_DUR);
-        this.eyeL.scale.y = lerpN(1, EYE_CLOSE_SCALE, a);
-        this.eyeR.scale.y = lerpN(1, EYE_CLOSE_SCALE, a);
+        this.eyeL.scale.y = lerpN(this.eyeBaseScaleY, EYE_CLOSE_SCALE, a);
+        this.eyeR.scale.y = lerpN(this.eyeBaseScaleY, EYE_CLOSE_SCALE, a);
         this.eyeL.rotation.z = lerpN(0, EYE_SQUINT_Z, a);
         this.eyeR.rotation.z = lerpN(0, -EYE_SQUINT_Z, a);
         if (this.blinkClock >= BLINK_CLOSE_DUR) {
@@ -148,10 +174,10 @@ export class Companion {
         break;
       }
       case 'o1': {
-        // Open eyes back to normal.
+        // Open eyes back to baseline (eyeBaseScaleY, not necessarily 1 — may be squinting).
         const a = alpha(BLINK_OPEN_DUR);
-        this.eyeL.scale.y = lerpN(EYE_CLOSE_SCALE, 1, a);
-        this.eyeR.scale.y = lerpN(EYE_CLOSE_SCALE, 1, a);
+        this.eyeL.scale.y = lerpN(EYE_CLOSE_SCALE, this.eyeBaseScaleY, a);
+        this.eyeR.scale.y = lerpN(EYE_CLOSE_SCALE, this.eyeBaseScaleY, a);
         this.eyeL.rotation.z = lerpN(EYE_SQUINT_Z, 0, a);
         this.eyeR.rotation.z = lerpN(-EYE_SQUINT_Z, 0, a);
         if (this.blinkClock >= BLINK_OPEN_DUR) {
@@ -170,8 +196,8 @@ export class Companion {
       }
       case 'c2': {
         const a = alpha(BLINK_CLOSE_DUR);
-        this.eyeL.scale.y = lerpN(1, EYE_CLOSE_SCALE, a);
-        this.eyeR.scale.y = lerpN(1, EYE_CLOSE_SCALE, a);
+        this.eyeL.scale.y = lerpN(this.eyeBaseScaleY, EYE_CLOSE_SCALE, a);
+        this.eyeR.scale.y = lerpN(this.eyeBaseScaleY, EYE_CLOSE_SCALE, a);
         this.eyeL.rotation.z = lerpN(0, EYE_SQUINT_Z, a);
         this.eyeR.rotation.z = lerpN(0, -EYE_SQUINT_Z, a);
         if (this.blinkClock >= BLINK_CLOSE_DUR) {
@@ -182,14 +208,14 @@ export class Companion {
       }
       case 'o2': {
         const a = alpha(BLINK_OPEN_DUR);
-        this.eyeL.scale.y = lerpN(EYE_CLOSE_SCALE, 1, a);
-        this.eyeR.scale.y = lerpN(EYE_CLOSE_SCALE, 1, a);
+        this.eyeL.scale.y = lerpN(EYE_CLOSE_SCALE, this.eyeBaseScaleY, a);
+        this.eyeR.scale.y = lerpN(EYE_CLOSE_SCALE, this.eyeBaseScaleY, a);
         this.eyeL.rotation.z = lerpN(EYE_SQUINT_Z, 0, a);
         this.eyeR.rotation.z = lerpN(-EYE_SQUINT_Z, 0, a);
         if (this.blinkClock >= BLINK_OPEN_DUR) {
           // Reset to idle with a fresh random wait.
-          this.eyeL.scale.y = 1;
-          this.eyeR.scale.y = 1;
+          this.eyeL.scale.y = this.eyeBaseScaleY;
+          this.eyeR.scale.y = this.eyeBaseScaleY;
           this.eyeL.rotation.z = 0;
           this.eyeR.rotation.z = 0;
           this.blinkClock = 0;
@@ -238,6 +264,50 @@ export class Companion {
     }
   }
 
+  // Advance all emotion layers:
+  //   • Panel squint — narrow eyes while "reading"; only during idle blink state to
+  //     avoid fighting the blink animation.
+  //   • Pop decay — scale burst after returning gaze to camera springs back to 1.
+  //   • Waggle — periodic Z-rotation shimmy expressing playfulness.
+  //   • Curiosity tilt — gentle resting head-tilt when not waggling.
+  // Writes this.emotionQuat, read by update() and multiplied onto body.quaternion.
+  private updateEmotion(dt: number, elapsed: number): void {
+    // Panel squint — only update eye scale during idle blink to avoid fighting animation.
+    if (this.blinkState === 'idle') {
+      const squintTarget = this.gazeState === 'panel' ? PANEL_SQUINT : 1.0;
+      this.eyeBaseScaleY += (squintTarget - this.eyeBaseScaleY) * Math.min(dt * 2.5, 1);
+      this.eyeL.scale.y   = this.eyeBaseScaleY;
+      this.eyeR.scale.y   = this.eyeBaseScaleY;
+    }
+
+    // Pop — decay toward 1 each frame.
+    this.popFactor += (1.0 - this.popFactor) * Math.min(dt * POP_DECAY, 1);
+
+    // Waggle — timer-driven periodic playful shimmy.
+    this.waggleTimer += dt;
+    if (!this.waggleActive && this.waggleTimer >= this.nextWaggle) {
+      this.waggleActive = true;
+      this.waggleClock  = 0;
+      this.waggleTimer  = 0;
+      this.nextWaggle   = WAGGLE_MIN_IDLE + Math.random() * (WAGGLE_MAX_IDLE - WAGGLE_MIN_IDLE);
+    }
+    if (this.waggleActive) {
+      this.waggleClock += dt;
+      if (this.waggleClock >= WAGGLE_DURATION) this.waggleActive = false;
+    }
+
+    // Emotion Z rotation — waggle overrides curiosity tilt when active.
+    let emotionZ: number;
+    if (this.waggleActive) {
+      const t = this.waggleClock / WAGGLE_DURATION;
+      emotionZ = Math.sin(this.waggleClock * Math.PI * WAGGLE_FREQUENCY) * WAGGLE_AMPLITUDE * (1 - t);
+    } else {
+      emotionZ = Math.sin(elapsed * TILT_SPEED) * TILT_AMPLITUDE;
+    }
+    this.emotionEuler.set(0, 0, emotionZ);
+    this.emotionQuat.setFromEuler(this.emotionEuler);
+  }
+
   // `camera` provides position + travel direction; the Mote orbits in the camera-facing
   // plane and alternates gaze between the camera and the panel behind it.
   // `motion` (0..1) scales idle bob for reduced-motion (it still follows the camera).
@@ -245,10 +315,17 @@ export class Companion {
     // 1. Double-blink — always fires, independent of motion preference.
     this.updateBlink(dt);
 
-    // 2. Gaze — always runs, independent of motion preference.
+    // 2. Gaze — detect to_camera→camera transition to fire the return pop, then advance.
+    const prevGazeState = this.gazeState;
     this.updateGaze(dt);
+    if (prevGazeState === 'to_camera' && this.gazeState === 'camera') {
+      this.popFactor = POP_AMOUNT;
+    }
 
-    // 3. Orbital target in the camera-facing plane.
+    // 3. Emotion layers: squint, pop decay, waggle / curiosity tilt → emotionQuat.
+    this.updateEmotion(dt, elapsed);
+
+    // 4. Orbital target in the camera-facing plane.
     this.orbitAngle += ORBIT_SPEED * dt;
     camera.getWorldDirection(this.forward);
 
@@ -266,10 +343,10 @@ export class Companion {
       .addScaledVector(this.camUp,   Math.sin(this.orbitAngle) * ORBIT_RADIUS);
     this.target.y += Math.sin(elapsed * 1.4) * 0.18 * motion;
 
-    // 4. Ease body toward the orbital target.
+    // 5. Ease body toward the orbital target.
     this.body.position.lerp(this.target, Math.min(dt * 3.5, 1));
 
-    // 5. Quaternion slerp for gaze (camera ↔ panel).
+    // 6. Quaternion slerp for gaze (camera ↔ panel).
     //    scratchObj is never added to the scene; used only for lookAt quaternion math.
     this.scratchObj.position.copy(this.body.position);
     this.scratchObj.up.set(0, 1, 0);
@@ -282,7 +359,15 @@ export class Companion {
 
     this.body.quaternion.slerpQuaternions(this.quatCamera, this.quatPanel, this.gazeBlend);
 
-    // 6. Trail: each dot eases toward the one ahead of it.
+    // 7. Layer emotion rotation (head tilt / waggle) on top of the gaze quaternion.
+    this.body.quaternion.multiply(this.emotionQuat);
+
+    // 8. Breathing scale × return-pop burst.
+    this.body.scale.setScalar(
+      (1 + Math.sin(elapsed * BREATH_SPEED) * BREATH_AMPLITUDE) * this.popFactor,
+    );
+
+    // 9. Trail: each dot eases toward the one ahead of it.
     let leader = this.body.position;
     for (const dot of this.trail) {
       dot.position.lerp(leader, Math.min(dt * 6, 1));
