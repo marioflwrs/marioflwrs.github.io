@@ -17,11 +17,19 @@ const ISLAND_PALETTES: IslandPalette[] = [
   { grass: 0x6a8f5e, rock: 0x6a5a7a }, // contact   (dusk)        — muted sage / cool purple-grey
 ];
 
-// Per-island float / tilt data.
+// Per-island float data.
 interface IslandData {
   group: THREE.Group;
   phase: number;
   baseY: number; // anchor y — preserved so the animation offset adds to it rather than replacing it
+}
+
+// Per-tree instance data for dynamic matrix updates.
+interface TreeInstance {
+  islandGroup: THREE.Group;
+  localOffset: THREE.Vector3; // offset from island center in group-local space
+  scale: number;
+  instanceIndex: number;
 }
 
 // Deterministic pseudo-random so the layout is stable between reloads.
@@ -36,9 +44,8 @@ function rng(seed: number): () => number {
 
 // Builds the floating islands for every section (plus a small archipelago of project
 // islets), with instanced low-poly trees shared across all islands. Each island has
-// its own palette-tinted materials and an independent float/tilt phase.
-// The whole group also bobs as one so the instanced (world-space) trees stay close
-// to their islands; per-island tilt amplitude is kept small for the same reason.
+// its own palette-tinted materials and an independent float phase. Tree instance
+// matrices are rebuilt every frame so trees stay attached when islands float.
 export class Islands {
   readonly group = new THREE.Group();
   readonly pickTargets: THREE.Object3D[] = [];
@@ -50,8 +57,15 @@ export class Islands {
   private readonly treeQuat = new THREE.Quaternion();
   private readonly treeScale = new THREE.Vector3();
 
-  // Per-island independent float/tilt state.
+  // Per-island independent float state.
   private readonly islandData: Array<IslandData> = [];
+
+  // Per-tree instance data for dynamic matrix updates.
+  private readonly treeInstances: Array<TreeInstance> = [];
+
+  // Own elapsed clock — advances every frame regardless of the global motion preference
+  // so islands always float (floating is intentional design, not distracting motion).
+  private ownElapsed = 0;
 
   private trunkMesh!: THREE.InstancedMesh;
   private canopyMesh!: THREE.InstancedMesh;
@@ -63,7 +77,7 @@ export class Islands {
     this.buildSharedMaterials();
     this.buildInstancedTrees();
 
-    const treeSlots: Array<{ position: THREE.Vector3; scale: number }> = [];
+    const treeSlots: Array<{ island: THREE.Group; localOffset: THREE.Vector3; scale: number }> = [];
 
     SECTIONS.forEach((section, index) => {
       const palette = ISLAND_PALETTES[index % ISLAND_PALETTES.length];
@@ -118,7 +132,7 @@ export class Islands {
     anchor: THREE.Vector3,
     sectionIndex: number,
     palette: IslandPalette,
-    treeSlots: Array<{ position: THREE.Vector3; scale: number }>,
+    treeSlots: Array<{ island: THREE.Group; localOffset: THREE.Vector3; scale: number }>,
   ): void {
     const random = rng(sectionIndex * 131 + 29);
     for (let i = 0; i < PROJECT_ISLET_COUNT; i++) {
@@ -143,15 +157,14 @@ export class Islands {
     island: THREE.Group,
     radius: number,
     seed: number,
-    treeSlots: Array<{ position: THREE.Vector3; scale: number }>,
+    treeSlots: Array<{ island: THREE.Group; localOffset: THREE.Vector3; scale: number }>,
   ): void {
     const random = rng(seed);
     for (let i = 0; i < TREES_PER_ISLAND; i++) {
       const a = random() * Math.PI * 2;
       const r = Math.sqrt(random()) * radius * 0.7;
-      const local = new THREE.Vector3(Math.cos(a) * r, 0.35, Math.sin(a) * r);
-      local.add(island.position);
-      treeSlots.push({ position: local, scale: 0.7 + random() * 0.6 });
+      const localOffset = new THREE.Vector3(Math.cos(a) * r, 0.35, Math.sin(a) * r);
+      treeSlots.push({ island, localOffset, scale: 0.7 + random() * 0.6 });
     }
   }
 
@@ -165,21 +178,23 @@ export class Islands {
     const capacity = SECTIONS.length * (TREES_PER_ISLAND + PROJECT_ISLET_COUNT * TREES_PER_ISLAND);
     this.trunkMesh = new THREE.InstancedMesh(trunkGeo, this.trunkMat, capacity);
     this.canopyMesh = new THREE.InstancedMesh(canopyGeo, this.canopyMat, capacity);
-    this.trunkMesh.instanceMatrix.setUsage(THREE.StaticDrawUsage);
-    this.canopyMesh.instanceMatrix.setUsage(THREE.StaticDrawUsage);
+    // DynamicDrawUsage because matrices are rebuilt every frame.
+    this.trunkMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    this.canopyMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     this.group.add(this.trunkMesh, this.canopyMesh);
   }
 
-  private applyTreeInstances(treeSlots: Array<{ position: THREE.Vector3; scale: number }>): void {
+  private applyTreeInstances(treeSlots: Array<{ island: THREE.Group; localOffset: THREE.Vector3; scale: number }>): void {
     const count = Math.min(treeSlots.length, this.trunkMesh.count);
     for (let i = 0; i < count; i++) {
-      const slot = treeSlots[i];
-      this.treePos.copy(slot.position);
+      const { island, localOffset, scale } = treeSlots[i];
+      this.treePos.copy(island.position).add(localOffset);
       this.treeQuat.identity();
-      this.treeScale.setScalar(slot.scale);
+      this.treeScale.setScalar(scale);
       this.treeMatrix.compose(this.treePos, this.treeQuat, this.treeScale);
       this.trunkMesh.setMatrixAt(i, this.treeMatrix);
       this.canopyMesh.setMatrixAt(i, this.treeMatrix);
+      this.treeInstances.push({ islandGroup: island, localOffset, scale, instanceIndex: i });
     }
     this.trunkMesh.count = count;
     this.canopyMesh.count = count;
@@ -187,20 +202,32 @@ export class Islands {
     this.canopyMesh.instanceMatrix.needsUpdate = true;
   }
 
-  // The whole group bobs gently as one unit so instanced (world-space) trees stay
-  // close to their islands. Each island also has an independent float + gentle tilt
-  // driven by its own phase offset. Amplitudes are intentionally small so the
-  // world-space instanced trees do not visibly detach from the tops.
-  // `motion` (0..1) scales idle animation for reduced-motion.
-  update(_dt: number, elapsed: number, motion: number): void {
-    // Group-level bob (keeps instanced trees roughly in sync).
-    this.group.position.y = Math.sin(elapsed * 0.45) * 0.22 * motion;
+  // Each island floats with its own phase. The own clock always advances so islands
+  // float regardless of the global reduced-motion preference (gentle bobbing is
+  // intentional design, not distracting motion). Tree instance matrices are rebuilt
+  // every frame so trees stay attached to their island surface.
+  update(dt: number, _elapsed: number, _motion: number): void {
+    this.ownElapsed += dt;
 
-    // Per-island independent float — rotation removed to prevent instanced trees
-    // (placed in world space) from visibly detaching when the island surface tilts.
+    // Group-level bob — gentle global drift shared by all islands.
+    this.group.position.y = Math.sin(this.ownElapsed * 0.45) * 0.30;
+
+    // Per-island independent float driven by each island's own phase offset.
     for (const { group, phase, baseY } of this.islandData) {
-      group.position.y = baseY + Math.sin(elapsed * 0.62 + phase) * 0.06 * motion;
+      group.position.y = baseY + Math.sin(this.ownElapsed * 0.62 + phase) * 0.35;
     }
+
+    // Rebuild instance matrices so trees follow their island's current position.
+    for (const { islandGroup, localOffset, scale, instanceIndex } of this.treeInstances) {
+      this.treePos.copy(islandGroup.position).add(localOffset);
+      this.treeQuat.identity();
+      this.treeScale.setScalar(scale);
+      this.treeMatrix.compose(this.treePos, this.treeQuat, this.treeScale);
+      this.trunkMesh.setMatrixAt(instanceIndex, this.treeMatrix);
+      this.canopyMesh.setMatrixAt(instanceIndex, this.treeMatrix);
+    }
+    this.trunkMesh.instanceMatrix.needsUpdate = true;
+    this.canopyMesh.instanceMatrix.needsUpdate = true;
   }
 
   dispose(): void {

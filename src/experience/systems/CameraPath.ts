@@ -9,13 +9,11 @@ export class CameraPath {
   private readonly positionCurve: THREE.CatmullRomCurve3;
   private readonly lookCurve: THREE.CatmullRomCurve3;
 
-  constructor() {
-    this.positionCurve = new THREE.CatmullRomCurve3(
-      SECTIONS.map((s) => s.camera.clone()),
-      false,
-      'catmullrom',
-      0.5,
+  constructor(isPortrait: boolean) {
+    const posKnots = SECTIONS.map((s) =>
+      (isPortrait && s.cameraPortrait ? s.cameraPortrait : s.camera).clone(),
     );
+    this.positionCurve = new THREE.CatmullRomCurve3(posKnots, false, 'catmullrom', 0.5);
     this.lookCurve = new THREE.CatmullRomCurve3(
       SECTIONS.map((s) => s.look.clone()),
       false,

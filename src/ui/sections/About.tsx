@@ -7,10 +7,10 @@ export default function About() {
           I solve problems that matter.
         </h2>
         <p className="body">
-          I'm a full-stack engineer who thinks about the whole picture: what the user experiences, how the code holds up under pressure, and whether the system is actually secure.
+          I'm a Full Stack Web Developer building real-time digital ecosystems that scale. I focus on performance, security, and thoughtful architecture. When I'm not writing code, I use AI agents to automate boilerplate work and testing, so I can focus on what actually matters.
         </p>
         <p className="body">
-          Most teams chase features and speed. I obsess over the parts you don't see — validation, rate limiting, resilience. That's where hard problems hide, and where I focus my energy.
+          That means spending my time on strong system design, handling complex state under concurrency, and implementing multi-layered security. Things like custom rate limiters, request-level security policies, and proper input validation aren't exciting, but they're essential.
         </p>
       </div>
     </section>

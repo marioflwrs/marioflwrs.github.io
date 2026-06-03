@@ -32,7 +32,7 @@ export default function Experience({ controller }: ExperienceProps) {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const world = new World(engine.scene, reduceMotion);
-    const rig = new ScrollRig(engine.camera);
+    const rig = new ScrollRig(engine.camera, engine.sizes.aspect < 1);
     const picking = new Picking(canvas, engine.camera, world.pickTargets);
 
     const offUpdate = engine.loop.add((dt) => {

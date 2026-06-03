@@ -36,6 +36,7 @@ export class Engine {
   }
 
   private readonly resize = (): void => {
+    this.camera.fov = this.sizes.aspect < 1 ? 65 : 50;
     this.camera.aspect = this.sizes.aspect;
     this.camera.updateProjectionMatrix();
     this.renderer.setPixelRatio(this.sizes.pixelRatio);

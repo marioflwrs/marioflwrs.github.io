@@ -36,7 +36,9 @@ export class ScrollController {
   private lastWheelMs = 0;
 
   // Touch tracking for swipe detection.
+  private touchStartX = 0;
   private touchStartY = 0;
+  private skipNextSwipe = false;
 
   constructor() {
     this.reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -133,14 +135,29 @@ export class ScrollController {
   };
 
   private readonly onTouchStart = (event: TouchEvent): void => {
+    this.touchStartX = event.touches[0]?.clientX ?? 0;
     this.touchStartY = event.touches[0]?.clientY ?? 0;
+    this.skipNextSwipe = !!(event.target as HTMLElement).closest?.('[data-no-swipe]');
   };
 
   private readonly onTouchEnd = (event: TouchEvent): void => {
+    const endX = event.changedTouches[0]?.clientX ?? this.touchStartX;
     const endY = event.changedTouches[0]?.clientY ?? this.touchStartY;
-    const delta = this.touchStartY - endY; // positive = swipe up (scroll down)
-    if (delta > SWIPE_THRESHOLD_PX) this.next();
-    else if (delta < -SWIPE_THRESHOLD_PX) this.prev();
+    const dx = this.touchStartX - endX;
+    const dy = this.touchStartY - endY;
+
+    // Horizontal swipe — let the browser / carousel handle it, don't navigate sections.
+    if (Math.abs(dx) >= Math.abs(dy)) {
+      this.skipNextSwipe = false;
+      return;
+    }
+
+    if (this.skipNextSwipe) {
+      this.skipNextSwipe = false;
+      return;
+    }
+    if (dy > SWIPE_THRESHOLD_PX) this.next();
+    else if (dy < -SWIPE_THRESHOLD_PX) this.prev();
   };
 
   private readonly onKeyDown = (event: KeyboardEvent): void => {

@@ -4,6 +4,7 @@
   inset: 0;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   display: block;
   z-index: 0;
 }
@@ -16,6 +17,7 @@
 
 .section {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   padding: clamp(1.5rem, 5vw, 6rem);
@@ -37,6 +39,7 @@
   max-width: 32rem;
   padding: clamp(1.5rem, 3vw, 2.5rem);
   border-radius: 1.25rem;
+  overflow: hidden;
   background: rgba(18, 14, 30, 0.45);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -99,9 +102,12 @@
 }
 
 .cta {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   margin-top: 0.5rem;
+  touch-action: manipulation;
   padding: 0.75rem 1.5rem;
+  min-height: 44px;
   border-radius: 999px;
   background: linear-gradient(120deg, #ff7ac6, #ffb066);
   color: #1a1024;
@@ -115,6 +121,14 @@
   padding: 0;
   display: grid;
   gap: 1rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.project-list::-webkit-scrollbar {
+  display: none;
 }
 
 .project-card {
@@ -125,6 +139,7 @@
   transition:
     border-color 0.3s ease,
     transform 0.3s ease;
+  scroll-snap-align: start;
 }
 
 .project-card.is-focused {
@@ -162,8 +177,42 @@
 }
 
 .project-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font-weight: 600;
   color: #ffb9e6;
+}
+
+/* Desktop carousel navigation buttons. */
+.carousel-nav {
+  display: none;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.carousel-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffb9e6;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.carousel-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.carousel-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 /* Contact links. */
@@ -175,6 +224,13 @@
   justify-content: center;
   gap: 1.5rem;
   font-weight: 600;
+}
+
+.link-row a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: 0.25rem;
 }
 
 /* Slim scroll-progress indicator. */
@@ -221,7 +277,7 @@
   justify-content: flex-end;
   width: 100%;
   margin: 0;
-  padding: 0.15rem 0;
+  padding: 0.6rem;
   border: 0;
   background: transparent;
   color: inherit;
@@ -264,6 +320,25 @@
   transform: translateX(0);
 }
 
+/* Scroll hint and carousel dots — hidden on desktop; mobile block below shows them. */
+.scroll-hint {
+  display: none;
+}
+
+.carousel-dots {
+  display: none;
+}
+
+/* Desktop carousel navigation — show and style. */
+.carousel-nav--top {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.carousel-nav--bottom {
+  display: none;
+}
+
 /* Skip link for keyboard users. */
 .skip-link {
   position: fixed;
@@ -288,6 +363,149 @@
   .section--right {
     justify-content: center;
   }
+
+  /* Safe-area insets for notch / home-indicator phones */
+  .dot-nav {
+    right: max(clamp(0.75rem, 2vw, 1.75rem), env(safe-area-inset-right, 0.75rem));
+  }
+
+  .section {
+    padding-bottom: max(clamp(1.5rem, 5vw, 6rem), env(safe-area-inset-bottom));
+  }
+
+  /* Projects panel — no vertical scroll; cards carousel horizontally instead. */
+  .panel--wide {
+    max-height: none;
+    overflow: visible;
+    scrollbar-width: initial;
+    scrollbar-color: initial;
+  }
+
+  /* Horizontal snap carousel for project cards on mobile. */
+  .project-list {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
+    gap: 0.75rem;
+    padding-bottom: 0.5rem;
+    /* Break out of panel padding so the next card peeks at the edge */
+    margin-inline: calc(-1 * clamp(1.5rem, 3vw, 2.5rem));
+    padding-inline: clamp(1.5rem, 3vw, 2.5rem);
+    scrollbar-width: none;
+  }
+
+  .project-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Each card is 88% of the panel — leaves a peek of the next card */
+  .project-card {
+    flex: 0 0 88%;
+    scroll-snap-align: start;
+  }
+
+  /* Reduce backdrop blur for GPU performance on mid-range devices */
+  .panel {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  /* Dot nav is view-only on mobile — disable interaction affordance */
+  .dot {
+    pointer-events: none;
+    cursor: default;
+  }
+
+  /* Remove scale pulse — looks interactive; dots are passive indicators here */
+  .dot.is-active::after {
+    transform: none;
+  }
+
+  /* Larger type for small screens */
+  .eyebrow {
+    font-size: 0.85rem;
+  }
+
+  .tag {
+    font-size: 0.78rem;
+  }
+
+  /* Scroll hint — show and animate on mobile */
+  @keyframes scroll-hint-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(8px); }
+  }
+
+  @keyframes scroll-hint-fade {
+    to { opacity: 0; visibility: hidden; }
+  }
+
+  .scroll-hint {
+    display: block;
+    margin-top: 1.25rem;
+    font-size: 1.1rem;
+    color: #ffb9e6;
+    opacity: 0.85;
+    animation:
+      scroll-hint-bounce 1.4s ease-in-out 0s 3,
+      scroll-hint-fade 0.5s ease-out 4.2s 1 forwards;
+  }
+
+  /* Carousel pagination dots */
+  .carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.9rem;
+  }
+
+  .carousel-dot {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transition: background 0.3s ease;
+  }
+
+  .carousel-dot.is-active {
+    background: #ffb066;
+  }
+
+  /* Hide desktop navigation buttons only on mobile */
+  .carousel-nav--top {
+    display: none;
+  }
+
+  /* Reduce horizontal padding on the Projects section only for more panel breathing room */
+  .section--right {
+    padding-inline: 1rem;
+  }
+
+  /* Tighter padding on the Projects panel — wider card text area */
+  .panel--wide {
+    width: 100%;
+    min-width: 0;
+    padding: 1rem;
+  }
+
+  /* Keep carousel breakout aligned to the new panel padding */
+  .project-list {
+    margin-inline: -1rem;
+    padding-inline: 1rem;
+  }
+
+  /* Clamp long blurbs to 4 lines — prevents cards from blowing up panel height */
+  .project-blurb {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    overflow: hidden;
+  }
 }
 
 /* Respect reduced-motion: reveal instantly, drop transitions. */
@@ -301,6 +519,12 @@
   .project-card,
   .dot::after,
   .dot-label {
+    transition: none;
+  }
+  .scroll-hint {
+    display: none;
+  }
+  .carousel-dot {
     transition: none;
   }
 }

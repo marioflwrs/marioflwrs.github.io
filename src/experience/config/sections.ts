@@ -10,7 +10,8 @@ export interface SectionDef {
   id: 'hero' | 'about' | 'projects' | 'contact';
   label: string;
   anchor: THREE.Vector3; // island center
-  camera: THREE.Vector3; // camera path knot near the island
+  camera: THREE.Vector3; // camera path knot — desktop / landscape
+  cameraPortrait?: THREE.Vector3; // camera path knot — mobile portrait (aspect < 1)
   look: THREE.Vector3; // look target at this knot
   accent: number;
 }
@@ -21,6 +22,7 @@ export const SECTIONS: SectionDef[] = [
     label: 'Intro',
     anchor: new THREE.Vector3(0, 0, 0),
     camera: new THREE.Vector3(0, 1.6, 9),
+    cameraPortrait: new THREE.Vector3(0, 1.4, 8),
     look: new THREE.Vector3(0, 0.4, 0),
     accent: 0xffd9a0,
   },
@@ -29,6 +31,7 @@ export const SECTIONS: SectionDef[] = [
     label: 'About',
     anchor: new THREE.Vector3(-7, -1.5, -24),
     camera: new THREE.Vector3(-3.5, 1.2, -14),
+    cameraPortrait: new THREE.Vector3(-6.0, 1.0, -16),
     look: new THREE.Vector3(-7, -1.0, -24),
     accent: 0x8fd4ff,
   },
@@ -37,6 +40,7 @@ export const SECTIONS: SectionDef[] = [
     label: 'Projects',
     anchor: new THREE.Vector3(7, 1.5, -48),
     camera: new THREE.Vector3(2.5, 3.0, -36),
+    cameraPortrait: new THREE.Vector3(5.0, 2.8, -38),
     look: new THREE.Vector3(7, 1.0, -49),
     accent: 0xffb066,
   },
@@ -45,6 +49,7 @@ export const SECTIONS: SectionDef[] = [
     label: 'Contact',
     anchor: new THREE.Vector3(-3, -1, -72),
     camera: new THREE.Vector3(-2.5, 1.4, -60),
+    cameraPortrait: new THREE.Vector3(-3.0, 1.2, -61),
     look: new THREE.Vector3(-3, -0.3, -73),
     accent: 0xc9a0ff,
   },
